@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Marketplace Item Detail - That College Hub</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts for Typography Hierarchy -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Spline+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface-variant": "#434656",
+                        "outline": "#737688",
+                        "on-secondary-fixed": "#351000",
+                        "surface-dim": "#d8dadc",
+                        "primary": "#003ec7",
+                        "inverse-surface": "#2d3133",
+                        "primary-container": "#0052ff",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#005471",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#75d1ff",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#c6eaff",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#004d67",
+                        "surface-tint": "#004ced",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed": "#001452",
+                        "secondary-container": "#fe6b00",
+                        "surface-container": "#eceef0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-primary": "#b7c4ff",
+                        "tertiary-fixed": "#c2e8ff",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "surface-bright": "#f7f9fb",
+                        "primary-fixed": "#dde1ff",
+                        "tertiary-container": "#006e92",
+                        "on-background": "#191c1e",
+                        "on-primary-container": "#dfe3ff",
+                        "on-secondary-container": "#572000",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#ffdbcc",
+                        "on-tertiary-fixed": "#001e2b",
+                        "outline-variant": "#c3c5d9",
+                        "secondary": "#a04100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-lg": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-sm": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+                        "display-lg": ["Spline Sans", "sans-serif"],
+                        "headline-lg": ["Spline Sans", "sans-serif"],
+                        "headline-md": ["Spline Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for gallery but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Mobile Container (Detail View suppresses global navs per guidelines) -->
+<main class="max-w-md mx-auto bg-surface min-h-screen relative overflow-x-hidden pb-32">
+<!-- Contextual Header (Glassmorphism over image) -->
+<header class="absolute top-0 left-0 w-full z-20 flex justify-between items-center p-container-margin pt-6">
+<button aria-label="Go Back" class="w-10 h-10 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/20 flex items-center justify-center text-on-surface hover:bg-white transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex gap-3">
+<button aria-label="Save Item" class="w-10 h-10 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/20 flex items-center justify-center text-on-surface hover:bg-white transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]">favorite_border</span>
+</button>
+<button aria-label="Share Item" class="w-10 h-10 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/20 flex items-center justify-center text-on-surface hover:bg-white transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</header>
+<!-- Image Gallery Hero -->
+<div class="relative w-full aspect-[4/5] bg-surface-container-highest rounded-b-[32px] overflow-hidden shadow-sm">
+<img alt="Organic Chemistry Textbook" class="w-full h-full object-cover" data-alt="A thick college textbook titled 'Organic Chemistry' lying flat on a wooden desk, photographed from directly above with natural window lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb1ahfYiLy-TkU3x0x_KmhadKVcjqPEN9c63Dz4n6y0GepXjzPuRunaIk0KNj8-rldDCC3WSmHXZLSoJbToDw3LiQtJhZslNiJHvriSPfhZIKfAo-uxUCmbhYnY1uSfmEs3L6NCNyItcuZsJBY36caMg6Dgq2qMfvof8g55P7gsrvu-WIql90TfHlO4047zXJhvh3h34YxtY4nvxX6B74J1zbR-5ibB6KF_iQ25RSX2-HbU1jrOPDX_jtaqHWvftDG2EPz1h_WZBM"/>
+<!-- Image Pagination Indicators -->
+<div class="absolute bottom-6 left-0 w-full flex justify-center gap-2 z-10">
+<div class="w-6 h-1.5 bg-white rounded-full shadow-sm"></div>
+<div class="w-1.5 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
+<div class="w-1.5 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
+<div class="w-1.5 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
+</div>
+<!-- Floating Price Tag (Guideline adherence) -->
+<div class="absolute bottom-5 right-5 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-xl shadow-[0_4px_16px_rgba(0,82,255,0.15)] border border-white/50 flex items-center z-10">
+<span class="font-headline-md text-primary-container font-bold leading-none">$85</span>
+<span class="font-label-sm text-on-surface-variant ml-1 mt-1 leading-none">.00</span>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="px-container-margin py-xl flex flex-col gap-xl">
+<!-- Title & Metadata -->
+<section class="flex flex-col gap-sm">
+<div class="flex items-center gap-2 mb-1 flex-wrap">
+<span class="bg-primary-fixed text-on-primary-fixed px-2.5 py-1 rounded-[6px] font-label-sm uppercase tracking-wider">Textbooks</span>
+<span class="bg-surface-container-high text-on-surface-variant px-2.5 py-1 rounded-[6px] font-label-sm tracking-wide">Used - Like New</span>
+<span class="text-outline font-label-sm ml-auto flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 2h ago
+                    </span>
+</div>
+<h1 class="font-headline-lg text-on-surface">Organic Chemistry, 9th Edition</h1>
+<p class="font-body-md text-on-surface-variant">ISBN: 978-1305080485 • Author: John McMurry</p>
+</section>
+<!-- Seller Profile Snippet (Bento-style card) -->
+<section class="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-surface-container flex justify-between items-center active:scale-[0.98] transition-transform cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="relative">
+<div class="w-14 h-14 rounded-full overflow-hidden bg-surface-container-highest border border-surface-container">
+<img alt="Seller Avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a young college student smiling brightly on a sunny campus quad." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWtGuu89FzMoGa_352zYevrW1NJtgAK37UQpXEllE9Iii6piXJQN7dWc6jBwN0d6GEqUu0idZVWuHzq8AKRvKnQ-8rR8NgK2NQ9MifgHOy9-dia0L0ji6aA0YZpnqCdJ-sydSvd529IugqFbID1QoOXrK5rPpZ4M4UHmq8nIvqgBGSAEYZJdd5p-yKqP80M6jG6pMcnaeFQbn5LWlCZ7fEPZUkSqqjIM47IcHJhtJXqnnZvuPIaNe1x4_XmRU-sG8wy2kJBr-0WEg"/>
+</div>
+<!-- Student Verified Badge -->
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-primary to-tertiary flex items-center justify-center border-2 border-surface-container-lowest shadow-sm">
+<span class="material-symbols-outlined text-white text-[12px] font-bold" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-on-surface">Sarah Jenkins</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-on-surface-variant">4.9 <span class="font-normal">(24 trusted trades)</span></span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</section>
+<!-- Secure Escrow Breakdown (Crucial Feature) -->
+<section class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_24px_rgba(0,62,199,0.04)] border border-primary/10 relative overflow-hidden">
+<!-- Decorative background blob -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+<div class="flex items-center justify-between mb-6 relative z-10">
+<h2 class="font-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">lock</span>
+                        Secure Escrow
+                    </h2>
+<button class="text-primary-container font-label-sm uppercase flex items-center gap-1 hover:underline">
+                        Terms <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</button>
+</div>
+<p class="font-body-md text-on-surface-variant mb-6 relative z-10">Your funds are protected. Payment is split into milestones and released only when conditions are met.</p>
+<!-- Vertical Stepper -->
+<div class="relative pl-6 pt-2 z-10">
+<!-- Thick Rounded Track -->
+<div class="absolute left-[15px] top-4 bottom-6 w-2 bg-surface-container-highest rounded-full"></div>
+<!-- Milestone 1 -->
+<div class="relative flex items-start gap-md mb-6">
+<div class="absolute -left-[29px] top-0 w-10 h-10 rounded-full bg-surface-container-lowest border-4 border-primary-container flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div class="pt-1">
+<div class="flex justify-between items-end gap-4">
+<h3 class="font-label-lg text-on-surface text-[16px]">30% Deposit</h3>
+<span class="font-label-sm text-primary-container bg-primary-fixed px-2 py-0.5 rounded-md">$25.50</span>
+</div>
+<p class="font-body-md text-on-surface-variant text-[14px] mt-1">Locks in the item. Held securely by Hub Escrow.</p>
+</div>
+</div>
+<!-- Milestone 2 -->
+<div class="relative flex items-start gap-md mb-6">
+<div class="absolute -left-[29px] top-0 w-10 h-10 rounded-full bg-surface border-[3px] border-outline-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-outline text-[18px]">handshake</span>
+</div>
+<div class="pt-1">
+<div class="flex justify-between items-end gap-4">
+<h3 class="font-label-lg text-on-surface text-[16px]">40% Mid-point</h3>
+<span class="font-label-sm text-outline font-normal">$34.00</span>
+</div>
+<p class="font-body-md text-on-surface-variant text-[14px] mt-1">Released when seller confirms meeting or shipping.</p>
+</div>
+</div>
+<!-- Milestone 3 -->
+<div class="relative flex items-start gap-md">
+<div class="absolute -left-[29px] top-0 w-10 h-10 rounded-full bg-surface border-[3px] border-outline-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-outline text-[18px]">task_alt</span>
+</div>
+<div class="pt-1">
+<div class="flex justify-between items-end gap-4">
+<h3 class="font-label-lg text-on-surface text-[16px]">30% Delivery</h3>
+<span class="font-label-sm text-outline font-normal">$25.50</span>
+</div>
+<p class="font-body-md text-on-surface-variant text-[14px] mt-1">Released only upon your confirmation of receipt.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Description & Details -->
+<section class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-surface-container">
+<h2 class="font-headline-md text-on-surface mb-4">Details</h2>
+<p class="font-body-md text-on-surface-variant leading-relaxed mb-6">
+                    Used for Chem 201 last semester. Pages are completely clean, no highlighting, pen marks, or folded corners. There is slight wear on the bottom right corner of the front cover from my backpack, but it's structurally perfect. 
+                    <br/><br/>
+                    Need to sell this quickly to afford next semester's lab materials! Happy to meet up anywhere near the Student Union building on Tuesdays/Thursdays, or I can ship it to you if you cover the cost.
+                </p>
+<!-- Tags / Attributes -->
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-lg font-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">location_on</span> Main Campus
+                    </span>
+<span class="bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-lg font-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span> Shipping Avail.
+                    </span>
+<span class="bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-lg font-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">payments</span> Escrow Only
+                    </span>
+</div>
+</section>
+</div>
+<!-- Fixed Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-t border-surface-container-highest pb-safe pt-4 px-container-margin shadow-[0_-8px_24px_rgba(0,0,0,0.04)]">
+<div class="max-w-md mx-auto flex gap-3 pb-6">
+<!-- Secondary Action -->
+<button class="flex-[0.8] border-2 border-primary-container text-primary-container bg-transparent font-label-lg rounded-xl py-3.5 flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+                    Message
+                </button>
+<!-- Primary Action -->
+<button class="flex-[1.2] bg-primary-container text-on-primary-container font-label-lg text-[16px] rounded-xl py-3.5 shadow-lg shadow-primary/20 hover:bg-primary transition-colors active:scale-[0.98] flex justify-center items-center gap-2">
+                    Buy Now
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>

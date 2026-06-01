@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Directory - That College Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Spline+Sans:wght@600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface-variant": "#434656",
+                        "outline": "#737688",
+                        "on-secondary-fixed": "#351000",
+                        "surface-dim": "#d8dadc",
+                        "primary": "#003ec7",
+                        "inverse-surface": "#2d3133",
+                        "primary-container": "#0052ff",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#005471",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#75d1ff",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#c6eaff",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#004d67",
+                        "surface-tint": "#004ced",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed": "#001452",
+                        "secondary-container": "#fe6b00",
+                        "surface-container": "#eceef0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-primary": "#b7c4ff",
+                        "tertiary-fixed": "#c2e8ff",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "surface-bright": "#f7f9fb",
+                        "primary-fixed": "#dde1ff",
+                        "tertiary-container": "#006e92",
+                        "on-background": "#191c1e",
+                        "on-primary-container": "#dfe3ff",
+                        "on-secondary-container": "#572000",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#ffdbcc",
+                        "on-tertiary-fixed": "#001e2b",
+                        "outline-variant": "#c3c5d9",
+                        "secondary": "#a04100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Spline Sans"],
+                        "headline-lg": ["Spline Sans"],
+                        "headline-md": ["Spline Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 md:hidden">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Student Profile Avatar" class="w-full h-full object-cover" data-alt="close up portrait of young man with modern haircut smiling naturally outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBltdE7B48OVnMzaSvyJhA71OgUI5z5_4AARx-WDjKvIw_Zv_7oe2AbTxPzYMJ1JdxjnF7Zb54DzsXNg-Yo0QgzVt_k4UpjO9QHzecD2VVV_t6XrhhOnyaJZeV-kAVpjuvyej_Wv-dphSSeqPckmlG73pdbvnObrg8szPmxKCCxPtOBullI9mn8uawBqSZf8saxgZz5_hJyf6wATwsAkB3_2Xs6KRPlWv6-Mj6sP6V1rJkjr7kGKhzDtmqfDOwCAx4_Nwtc08BM2a8"/>
+</div>
+<h1 class="font-['Spline_Sans'] font-bold tracking-tight text-xl text-[#0052FF]">That College Hub</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-[#0052FF]">search</span>
+</button>
+</header>
+<!-- Web Top Nav (Combined TopAppBar + Tabs for md+) -->
+<header class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-8 h-20 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_4px_16px_rgba(0,62,199,0.02)]">
+<div class="flex items-center gap-4">
+<h1 class="font-['Spline_Sans'] font-bold tracking-tight text-2xl text-[#0052FF]">That College Hub</h1>
+</div>
+<nav class="flex items-center gap-2">
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-[#0052FF] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span class="font-label-lg text-label-lg">Home</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-[#0052FF] font-bold" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-label-lg text-label-lg">Directory</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-[#0052FF] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<span class="font-label-lg text-label-lg">Marketplace</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-[#0052FF] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+<span class="font-label-lg text-label-lg">Chat</span>
+</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-on-surface">search</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest cursor-pointer border-2 border-transparent hover:border-[#0052FF] transition-colors">
+<img alt="Student Profile Avatar" class="w-full h-full object-cover" data-alt="close up portrait of young man with modern haircut smiling naturally outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlfan724lAAsl0mlG3aIWjzVRnFofbTAde_Dmflo2m7jf0Ab6CNtUY-lVIuh4xvjCG67j0UJjdnXZufYqxTvjpc33mP_DTb0rlMJrbPQ2DFiFBHAWx5jmL-0ndfez1x7IqXeGepEjE-orMz_U7EoRV13E14dT7WJfmztmQZvtqx-6XMhc9ccq_ZoCAB05r1VQvG8gGvq8G6V9Rs0TbuogJoWLc97AZqMNc85xI8lsU_RSROFtoFxdBDdnmrKYqH37pRdUwhV0Yb2A"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[88px] md:pt-[104px] px-container-margin max-w-7xl mx-auto">
+<!-- Header & Search/Filter Section -->
+<div class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Student Directory</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Connect with verified peers across campus.</p>
+<div class="flex flex-col sm:flex-row gap-sm items-start sm:items-center w-full">
+<div class="relative w-full sm:max-w-md flex-grow">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md shadow-sm transition-all placeholder:text-outline" placeholder="Search by name or skills..." type="text"/>
+</div>
+<!-- Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto w-full pb-2 sm:pb-0 scrollbar-hide">
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg border border-primary-container">
+                        All Students
+                    </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-lg text-label-lg border border-outline-variant hover:bg-surface-container transition-colors">
+                        Computer Science
+                    </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-lg text-label-lg border border-outline-variant hover:bg-surface-container transition-colors">
+                        Design
+                    </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-lg text-label-lg border border-outline-variant hover:bg-surface-container transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">tune</span> Filters
+                    </button>
+</div>
+</div>
+</div>
+<!-- Directory Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter md:gap-lg">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(0,62,199,0.04)] border border-surface-container flex flex-col overflow-hidden transition-transform hover:-translate-y-1 duration-300">
+<div class="h-48 w-full bg-surface-container relative rounded-t-[24px] overflow-hidden">
+<img alt="Sarah Jenkins" class="w-full h-full object-cover" data-alt="candid portrait of young college woman smiling brightly outdoors with blurred campus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhAHoAF8p9ZEqn6VxUKPi2YMdwCXvvk3Xk65uyDVpqOUFht8BFgNNyVgoRVsO_3-sKDTtB3F2dtpqUNndU9wBcLF7L7kStq_Xsi9s3XDlQbpQgE3YlR2BbuG9cUwwCul8Kw5LgO3rhJaL0ieKnPCItuErvTV7VFy6viD7rPIFmkj_M0fMSIkAfIp8QNsLTjrMpQ63lX4rCQD_ANUxYATI2OHb3Cy085HMtJL77iXg3VBGHtHEGdQhTKl0-6X4GjhnwEda5oejeIzU"/>
+<div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="font-label-sm text-label-sm text-on-surface">Active recently</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface text-[20px]">Sarah Jenkins</h3>
+<!-- Student Verified Badge -->
+<div class="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-primary to-tertiary text-on-primary shadow-sm" title="Student Verified">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Computer Science • Junior</p>
+<div class="flex flex-wrap gap-2 mb-lg flex-grow">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">UI/UX</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Frontend</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Coffee</span>
+</div>
+<button class="w-full py-3 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg hover:opacity-90 transition-opacity flex justify-center items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                        Connect
+                    </button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(0,62,199,0.04)] border border-surface-container flex flex-col overflow-hidden transition-transform hover:-translate-y-1 duration-300">
+<div class="h-48 w-full bg-surface-container relative rounded-t-[24px] overflow-hidden">
+<img alt="Marcus Torres" class="w-full h-full object-cover" data-alt="casual portrait of young male student looking off camera sitting on library steps with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6Iudwp-_Ahdz_yZ3b4yfVcmrWkwu-DISmrkovwRiquyFAIZr_0eevUDEFkebJFq23TfnuvTBW0YO54tl3bzG7nDZrrgh1yZvPhrc6jojfXm1cxKobJxXGdLaN26PLchPwaEYAi6IAv0VGRfi7MjQsZTaDY-WlkdnrKi0XZoNPLWmMch-4QKieCA5lzMRGe4OjHtqxzl7pVMa5GLEYRXSf24qXFKsJA2dpRPISaJheDiywsq0SyXQzKeFLrwbJNsmjDsTZ7A-speg"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface text-[20px]">Marcus Torres</h3>
+<!-- Student Verified Badge -->
+<div class="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-primary to-tertiary text-on-primary shadow-sm" title="Student Verified">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Business Administration • Senior</p>
+<div class="flex flex-wrap gap-2 mb-lg flex-grow">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Marketing</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Startups</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Photography</span>
+</div>
+<button class="w-full py-3 rounded-full bg-surface-container-low border border-outline-variant text-on-surface font-label-lg text-label-lg hover:bg-surface-container transition-colors flex justify-center items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+                        Message
+                    </button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(0,62,199,0.04)] border border-surface-container flex flex-col overflow-hidden transition-transform hover:-translate-y-1 duration-300">
+<div class="h-48 w-full bg-surface-container relative rounded-t-[24px] overflow-hidden">
+<img alt="Aisha Patel" class="w-full h-full object-cover" data-alt="vibrant outdoor portrait of smiling female student wearing glasses with leafy trees in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEBW13m7Mlnlxg6WDWnh66GySJIee2X6ycp8xu6zztCEQDmoQlMWT435cpfioapIhnf7EzAfRzxGYZ4Ab2pyI06QrAvYu_CiDOA5pojyj2Xx2u9TM_xV_3kh3m7YBwsSEyfu9t1IUDe_1iDUQaWBJvSwIaqoCmdeW9HAH4M1cULVLvdA2O6V9goieMADy04PCZsSxTUfN1zCANh3IPVMy2of0NeO3FEB5yns4xhusTLIiQhWyuJCmleltBqUs4EftNMif_7z5TbDI"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface text-[20px]">Aisha Patel</h3>
+<!-- Student Verified Badge -->
+<div class="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-primary to-tertiary text-on-primary shadow-sm" title="Student Verified">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Graphic Design • Sophomore</p>
+<div class="flex flex-wrap gap-2 mb-lg flex-grow">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Illustration</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Branding</span>
+</div>
+<button class="w-full py-3 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg hover:opacity-90 transition-opacity flex justify-center items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                        Connect
+                    </button>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_16px_rgba(0,62,199,0.04)] border border-surface-container flex flex-col overflow-hidden transition-transform hover:-translate-y-1 duration-300">
+<div class="h-48 w-full bg-surface-container relative rounded-t-[24px] overflow-hidden">
+<img alt="Liam Chen" class="w-full h-full object-cover" data-alt="portrait of young male student looking confident in an indoor cafe setting with warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS4420fZgIv1QUPTCEMpeTkEH8IbO7_KVFdUhXGi01CePKgK3LXVlxU7cvxOBPmhCXA77fGl0m8NKZDSePiXDvHNo_ZWwCP3kuvD2qqwI7yrJsTeHAI7JrEMi1CGd4_oxZSlTSWlzJiz1Q7SPXCy1OiOAEF9a02QHO_g1CajH3rF-C0Dasm3uh7hRCJQHxnDfjBUQ7DXXX6iN8Vlmz1QpXvKzs78JV0-mxyAct78rBnjSHIMd_p0-WVqv-QLQfBtTbYH4uaxG9ppI"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface text-[20px]">Liam Chen</h3>
+<!-- Student Verified Badge -->
+<div class="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-primary to-tertiary text-on-primary shadow-sm" title="Student Verified">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Mechanical Engineering • Freshman</p>
+<div class="flex flex-wrap gap-2 mb-lg flex-grow">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">Robotics</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-lg font-label-sm text-label-sm">3D Printing</span>
+</div>
+<button class="w-full py-3 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg hover:opacity-90 transition-opacity flex justify-center items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                        Connect
+                    </button>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-6 pt-3 bg-white border-t border-gray-100 shadow-[0_-4px_16px_rgba(0,82,255,0.06)] rounded-t-[24px] md:hidden">
+<a class="flex flex-col items-center justify-center text-gray-400 hover:text-[#0052FF] transition-colors active:scale-90 duration-150 w-16" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-1">Home</span>
+</a>
+<!-- Active Tab: Directory -->
+<a class="flex flex-col items-center justify-center bg-blue-50 text-[#0052FF] rounded-2xl px-5 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-1">Directory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 hover:text-[#0052FF] transition-colors active:scale-90 duration-150 w-16" href="#">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-1">Marketplace</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 hover:text-[#0052FF] transition-colors active:scale-90 duration-150 w-16" href="#">
+<span class="material-symbols-outlined text-[24px]">chat_bubble</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-1">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 hover:text-[#0052FF] transition-colors active:scale-90 duration-150 w-16" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

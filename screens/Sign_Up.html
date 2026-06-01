@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registration - College Hub</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Spline+Sans:wght@600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#005471",
+                    "surface-dim": "#d8dadc",
+                    "on-primary-container": "#dfe3ff",
+                    "on-tertiary-fixed": "#001e2b",
+                    "on-surface": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#b7c4ff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#ffdbcc",
+                    "on-surface-variant": "#434656",
+                    "surface-container-low": "#f2f4f6",
+                    "surface": "#f7f9fb",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed-dim": "#ffb693",
+                    "on-tertiary-container": "#c6eaff",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e0e3e5",
+                    "tertiary-fixed-dim": "#75d1ff",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "surface-variant": "#e0e3e5",
+                    "primary-container": "#0052ff",
+                    "secondary-container": "#fe6b00",
+                    "outline-variant": "#c3c5d9",
+                    "secondary": "#a04100",
+                    "inverse-surface": "#2d3133",
+                    "outline": "#737688",
+                    "on-secondary-fixed": "#351000",
+                    "surface-container": "#eceef0",
+                    "on-background": "#191c1e",
+                    "surface-container-high": "#e6e8ea",
+                    "primary-fixed": "#dde1ff",
+                    "error-container": "#ffdad6",
+                    "primary": "#003ec7",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "tertiary-fixed": "#c2e8ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#006e92",
+                    "on-secondary-container": "#572000",
+                    "surface-bright": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004d67",
+                    "inverse-on-surface": "#eff1f3",
+                    "background": "#f7f9fb",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "surface-tint": "#004ced",
+                    "on-primary-fixed": "#001452"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "gutter": "16px",
+                    "lg": "24px",
+                    "container-margin": "20px"
+            },
+            "fontFamily": {
+                    "headline-md": [
+                            "Spline Sans"
+                    ],
+                    "label-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Spline Sans"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Spline Sans"
+                    ]
+            },
+            "fontSize": {
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-lg": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.1px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.5px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex">
+<!-- Note: TopAppBar and BottomNavBar are deliberately suppressed per the Design System rules for Registration/Linear flows -->
+<!-- Split Screen Layout -->
+<div class="flex flex-col lg:flex-row w-full flex-1">
+<!-- Left: Branding & Visuals (Hidden on small mobile, visible tablet/desktop) -->
+<div class="hidden md:flex flex-col justify-between w-full lg:w-5/12 bg-primary relative overflow-hidden p-xl">
+<!-- Background Image with Overlay -->
+<div class="absolute inset-0 z-0">
+<img alt="" class="w-full h-full object-cover opacity-40 mix-blend-multiply" data-alt="Group of diverse college students walking and laughing together on a bright sunny university campus with classic brick buildings" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsq6F45nD9yPfJGAUCT5iBxAyeTl7B8FGTeZxa9Forj6hWlT7u1xu6SLlPox5ErhY0IYcFmSHpYnTtKwGkUE5PhYSEvsCWrnVABYUOFujoD3zRVoBRPBRfPYvYZNRJ6VJ37038I-FxM5eMtlscTo_GU7vviKVekhQzyCgEAiQwmANo31DbzHOHBUc6OkX1g1VRdjoK3yjTTWgottPq56D-6sv_Gy41x2MSQKxvCp3aH-0nsXRTbuDvkVBfKZFWOLemfsHMSUugh2M"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary-fixed-variant/90 to-primary/40"></div>
+</div>
+<!-- Content overlay -->
+<div class="relative z-10 flex flex-col h-full">
+<!-- Brand Header -->
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">school</span>
+<h1 class="font-headline-lg text-headline-lg text-on-primary font-black tracking-tight">College Hub</h1>
+</div>
+<!-- Value Prop -->
+<div class="mt-auto mb-xl">
+<h2 class="font-display-lg text-display-lg text-on-primary mb-md max-w-[400px]">
+                        The campus network built for you.
+                    </h2>
+<p class="font-body-lg text-body-lg text-primary-fixed max-w-[360px]">
+                        Join thousands of students trading, connecting, and discovering what's happening on campus right now.
+                    </p>
+</div>
+<!-- Social Proof Chips -->
+<div class="flex gap-sm flex-wrap">
+<div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-primary text-[18px]">verified</span>
+<span class="font-label-lg text-label-lg text-on-primary">Verified .edu Only</span>
+</div>
+<div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-primary text-[18px]">security</span>
+<span class="font-label-lg text-label-lg text-on-primary">Secure Escrow</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Registration Form Container -->
+<div class="flex-1 flex flex-col justify-center items-center p-md lg:p-xl bg-surface">
+<!-- Mobile Brand Header (Visible only on mobile) -->
+<div class="md:hidden flex items-center gap-sm w-full max-w-md mb-xl mt-lg">
+<div class="bg-primary-container p-2 rounded-xl">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary font-black tracking-tight">College Hub</h1>
+</div>
+<div class="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-[0_4px_24px_rgba(0,62,199,0.06)] p-lg lg:p-xl border border-surface-container-high">
+<div class="mb-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs">Create an account</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Sign up with your university email to get started.</p>
+</div>
+<form action="#" class="flex flex-col gap-md">
+<!-- Full Name -->
+<div class="flex flex-col gap-xs relative">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1" for="fullName">Full Name</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline">person</span>
+<input class="w-full bg-surface-container text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[48px] pr-md border-transparent focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant outline-none" id="fullName" name="fullName" placeholder="Jane Doe" required="" type="text"/>
+</div>
+</div>
+<!-- College Email -->
+<div class="flex flex-col gap-xs relative">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1" for="email">College Email (.edu)</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline">mail</span>
+<input class="w-full bg-surface-container text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[48px] pr-md border-transparent focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant outline-none" id="email" name="email" pattern=".*\.edu$" placeholder="student@university.edu" required="" type="email"/>
+</div>
+<p class="font-label-sm text-label-sm text-primary ml-1 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                            Must end in .edu for campus verification
+                        </p>
+</div>
+<!-- Password Group -->
+<div class="flex flex-col sm:flex-row gap-md">
+<div class="flex flex-col gap-xs relative flex-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1" for="password">Password</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline">lock</span>
+<input class="w-full bg-surface-container text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[48px] pr-md border-transparent focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant outline-none" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs relative flex-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1" for="confirmPassword">Confirm Password</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline">lock_reset</span>
+<input class="w-full bg-surface-container text-on-surface font-body-md text-body-md rounded-lg py-3 pl-[48px] pr-md border-transparent focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant outline-none" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms Checkbox -->
+<div class="flex items-start gap-sm mt-xs">
+<div class="flex items-center h-6">
+<input class="w-5 h-5 rounded text-primary border-outline focus:ring-primary focus:ring-offset-surface-container-lowest bg-surface-container-lowest cursor-pointer" id="terms" name="terms" required="" type="checkbox"/>
+</div>
+<div class="flex flex-col">
+<label class="font-body-md text-body-md text-on-surface-variant cursor-pointer" for="terms">
+                                I agree to the <a class="text-primary font-label-lg hover:underline decoration-2 underline-offset-2" href="#">Terms of Service</a> and <a class="text-primary font-label-lg hover:underline decoration-2 underline-offset-2" href="#">Privacy Policy</a>.
+                            </label>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-md flex flex-col gap-md">
+<button class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-lg text-label-lg rounded-full py-4 px-6 flex justify-center items-center gap-xs transition-all active:scale-[0.98] shadow-sm hover:shadow-md" type="submit">
+<span>Create Account</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<div class="text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Already have an account? 
+                                <a class="text-primary font-label-lg hover:text-on-primary-fixed-variant transition-colors" href="#">Log in</a>
+</p>
+</div>
+</div>
+</form>
+</div>
+<!-- Minimal Footer for Support Links -->
+<div class="mt-lg flex gap-md justify-center w-full max-w-md">
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface transition-colors" href="#">Help Center</a>
+<span class="text-outline-variant">•</span>
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface transition-colors" href="#">Contact Campus Rep</a>
+</div>
+</div>
+</div>
+</body></html>

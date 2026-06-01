@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>That College Hub - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Spline+Sans:wght@600;700;900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface-variant": "#434656",
+                        "outline": "#737688",
+                        "on-secondary-fixed": "#351000",
+                        "surface-dim": "#d8dadc",
+                        "primary": "#003ec7",
+                        "inverse-surface": "#2d3133",
+                        "primary-container": "#0052ff",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#005471",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#75d1ff",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#c6eaff",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#004d67",
+                        "surface-tint": "#004ced",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed": "#001452",
+                        "secondary-container": "#fe6b00",
+                        "surface-container": "#eceef0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-primary": "#b7c4ff",
+                        "tertiary-fixed": "#c2e8ff",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "surface-bright": "#f7f9fb",
+                        "primary-fixed": "#dde1ff",
+                        "tertiary-container": "#006e92",
+                        "on-background": "#191c1e",
+                        "on-primary-container": "#dfe3ff",
+                        "on-secondary-container": "#572000",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#ffdbcc",
+                        "on-tertiary-fixed": "#001e2b",
+                        "outline-variant": "#c3c5d9",
+                        "secondary": "#a04100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Spline Sans"],
+                        "headline-lg": ["Spline Sans"],
+                        "headline-md": ["Spline Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        .shadow-card-tint {
+            box-shadow: 0 4px 20px rgba(0, 62, 199, 0.04);
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16">
+<!-- Leading Avatar / Brand -->
+<a class="flex items-center gap-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full active:scale-95 transition-all duration-200 p-1 -ml-1" href="#">
+<img alt="Student Profile Avatar" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE"/>
+<h1 class="text-xl font-black text-[#0052FF] dark:text-blue-400 font-['Spline_Sans'] font-bold tracking-tight md:hidden">That College Hub</h1>
+</a>
+<!-- Desktop Navigation Cluster (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-xl absolute left-1/2 -translate-x-1/2">
+<a class="text-[#0052FF] font-bold font-['Spline_Sans'] flex flex-col items-center" href="#">
+<span class="text-label-lg font-label-lg">Home</span>
+<div class="w-1.5 h-1.5 bg-[#0052FF] rounded-full mt-1"></div>
+</a>
+<a class="text-gray-500 dark:text-gray-400 font-['Spline_Sans'] hover:text-[#0052FF] transition-colors flex flex-col items-center" href="#">
+<span class="text-label-lg font-label-lg">Directory</span>
+</a>
+<a class="text-gray-500 dark:text-gray-400 font-['Spline_Sans'] hover:text-[#0052FF] transition-colors flex flex-col items-center" href="#">
+<span class="text-label-lg font-label-lg">Marketplace</span>
+</a>
+<a class="text-gray-500 dark:text-gray-400 font-['Spline_Sans'] hover:text-[#0052FF] transition-colors flex flex-col items-center" href="#">
+<span class="text-label-lg font-label-lg">Chat</span>
+</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-xs">
+<button class="w-10 h-10 flex items-center justify-center text-[#0052FF] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-[#0052FF] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="hidden md:flex w-10 h-10 items-center justify-center bg-primary text-white hover:bg-primary-container rounded-full active:scale-95 transition-all duration-200 ml-xs shadow-sm">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[88px] pb-[104px] md:pb-xl px-container-margin max-w-2xl mx-auto flex flex-col gap-xl">
+<!-- Post Card: Text + Image -->
+<article class="bg-surface-container-lowest rounded-[24px] p-md shadow-card-tint flex flex-col gap-md">
+<!-- User Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm cursor-pointer group">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover group-hover:opacity-90 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAViLw2zwzhUSJFy_UuJo2aYJ6jH0nHZwl68UEM9ORF33nfLAH19HVQpHlczhhLc4GbVb0EA9SrvV1ofwaOZdC4XUlmlxLeYL9dkxym0SHhy-yhy5VZFCbvRgWBhEOnnnLtcdDcN-VL-Oy9lLJl5N75ampRtuW1ZVmRPnMNsNsXHZDQeoA7DQL_yu3FVI-qEJJmO3dbTsTHx9sPlQxmckEOZDTePrXWJpphGC_XeodlyoPCv2RdH8spTg4hsLj2MH9FblEQc66ehu8"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-xs">
+<span class="text-label-lg font-label-lg text-on-surface group-hover:text-primary transition-colors">Marcus J.</span>
+<div class="bg-gradient-to-br from-primary to-tertiary w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-[10px] font-bold" data-icon="check">check</span>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-outline">2 hrs ago • Campus North</span>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<!-- Content -->
+<div class="flex flex-col gap-sm">
+<p class="text-body-md font-body-md text-on-surface">
+                    Just secured tickets for the homecoming game! 🏈 Who's tailgating at Lot B beforehand? Bringing the portable grill.
+                </p>
+<div class="w-full h-48 md:h-64 rounded-xl overflow-hidden mt-sm relative">
+<img alt="Stadium view" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV3fkLyi3TntElT3C1-rZ1eJ7W2rHHRPZkBic29d8y_UKHs13oPOSNHGpivVfTGpkgflGoD6ddGcqs4qj5Y4ntR-A4d79JUCHWqIqSobEap88Y0dMpCM6x6OBVM9SL0VddGkAkUMjDn3C1R94Ucr96R7mOdduDG4h5Bar5t046cDC6azeESTFGjimypkWNAfZoBox_I-5dqA3o4dvlsJ7vfZZPsxOvhFOEWrSjEz3JkF-zTDhG480Brao46niTatcRSE_PknaX1mU"/>
+</div>
+</div>
+<!-- Interaction Chips -->
+<div class="flex items-center gap-sm mt-xs">
+<button class="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-200 px-4 py-2 rounded-full flex items-center gap-xs text-label-lg font-label-lg active:scale-95">
+<span class="material-symbols-outlined text-[18px] icon-fill" data-icon="favorite" data-weight="fill">favorite</span>
+                    142
+                </button>
+<button class="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-200 px-4 py-2 rounded-full flex items-center gap-xs text-label-lg font-label-lg active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="chat_bubble">chat_bubble</span>
+                    24
+                </button>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-200 p-2 rounded-full flex items-center justify-center ml-auto active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="share">share</span>
+</button>
+</div>
+</article>
+<!-- Post Card: Poll -->
+<article class="bg-surface-container-lowest rounded-[24px] p-md shadow-card-tint flex flex-col gap-md">
+<!-- User Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm cursor-pointer group">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover group-hover:opacity-90 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmVoIx5fh3Gu7Zs6vYiqHzNV5y2eIy3sT1_grJV7w_VJzIQnqtZouDs0tfuiGYcx4f9RvYRqEhClfXfcrp2bIBL3KMTObusf0HAyI9p2868Zig64lLDcasuQ8lX5RVQmeSevVOdx5eF2KIzmnok60carWUhL9xLepa-0NXA3i-4xXGPLlERduBtCbLyveUNNuB-wfHb3ZpBRoMbuK-aDdbAlaikb_p9l75HyT_l1zCdrOCKDsCfkT1FHXUrPzPlWtSfL_Yxz00Pa0"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-xs">
+<span class="text-label-lg font-label-lg text-on-surface group-hover:text-primary transition-colors">Sarah T.</span>
+<div class="bg-gradient-to-br from-primary to-tertiary w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-[10px] font-bold" data-icon="check">check</span>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-outline">4 hrs ago • Study Groups</span>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<!-- Content -->
+<div class="flex flex-col gap-md">
+<p class="text-body-md font-body-md text-on-surface font-semibold">
+                    Midterms next week! Where's the best spot to cram tonight? 📚☕️
+                </p>
+<!-- Poll Options -->
+<div class="flex flex-col gap-sm">
+<button class="w-full relative bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl overflow-hidden text-left p-3 border border-transparent focus:border-primary focus:outline-none active:scale-[0.99] transition-transform">
+<div class="absolute left-0 top-0 bottom-0 bg-primary/10 w-[65%] z-0 rounded-l-xl"></div>
+<div class="relative z-10 flex justify-between items-center text-label-lg font-label-lg text-on-surface">
+<span>Main Library (Quiet Floor)</span>
+<span class="text-primary font-bold">65%</span>
+</div>
+</button>
+<button class="w-full relative bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl overflow-hidden text-left p-3 border border-transparent focus:border-primary focus:outline-none active:scale-[0.99] transition-transform">
+<div class="absolute left-0 top-0 bottom-0 bg-primary/10 w-[20%] z-0 rounded-l-xl"></div>
+<div class="relative z-10 flex justify-between items-center text-label-lg font-label-lg text-on-surface">
+<span>Student Union</span>
+<span class="text-on-surface-variant">20%</span>
+</div>
+</button>
+<button class="w-full relative bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl overflow-hidden text-left p-3 border border-transparent focus:border-primary focus:outline-none active:scale-[0.99] transition-transform">
+<div class="absolute left-0 top-0 bottom-0 bg-primary/10 w-[15%] z-0 rounded-l-xl"></div>
+<div class="relative z-10 flex justify-between items-center text-label-lg font-label-lg text-on-surface">
+<span>Local Coffee Shop</span>
+<span class="text-on-surface-variant">15%</span>
+</div>
+</button>
+<span class="text-label-sm font-label-sm text-outline mt-1">342 votes • 2 hours left</span>
+</div>
+</div>
+<!-- Interaction Chips -->
+<div class="flex items-center gap-sm mt-xs">
+<button class="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-200 px-4 py-2 rounded-full flex items-center gap-xs text-label-lg font-label-lg active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+                    45
+                </button>
+<button class="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-200 px-4 py-2 rounded-full flex items-center gap-xs text-label-lg font-label-lg active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="chat_bubble">chat_bubble</span>
+                    12
+                </button>
+</div>
+</article>
+</main>
+<!-- FAB: Floating Action Button -->
+<button class="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-40 bg-primary-container text-on-primary-container w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-[0_-4px_16px_rgba(0,82,255,0.06)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-6 pt-3 rounded-t-[24px]">
+<!-- Active Tab: Home -->
+<a class="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/30 text-[#0052FF] dark:text-blue-300 rounded-2xl px-5 py-1 active:scale-90 transition-all duration-150" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="home" data-weight="fill">home</span>
+<span class="font-['Spline_Sans'] text-[11px] font-semibold mt-0.5">Home</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-[#0052FF] dark:hover:text-blue-300 transition-all active:scale-90 duration-150 px-2 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-0.5">Directory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-[#0052FF] dark:hover:text-blue-300 transition-all active:scale-90 duration-150 px-2 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-0.5">Marketplace</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-[#0052FF] dark:hover:text-blue-300 transition-all active:scale-90 duration-150 px-2 py-1 relative" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<!-- Unread indicator -->
+<div class="absolute top-1 right-2 w-2.5 h-2.5 bg-secondary-container rounded-full border-2 border-white dark:border-gray-900"></div>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-0.5">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-[#0052FF] dark:hover:text-blue-300 transition-all active:scale-90 duration-150 px-2 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Spline_Sans'] text-[11px] font-medium mt-0.5">Profile</span>
+</a>
+</nav>
+</body></html>
