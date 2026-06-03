@@ -1,24 +1,22 @@
 import { useState, useEffect } from 'react';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 type AuthState = {
-  user: FirebaseAuthTypes.User | null;
+  user: any | null;
   loading: boolean;
 };
 
 export const useAuth = (): AuthState => {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Firebase listener — fires on login, logout, and token refresh
-    const unsubscribe = auth().onAuthStateChanged((firebaseUser) => {
-      setUser(firebaseUser);
+    // Mock successful login immediately to bypass Firebase for now
+    const timer = setTimeout(() => {
+      setUser({ uid: 'mock-user-123' });
       setLoading(false);
-    });
+    }, 100);
 
-    // Cleanup listener on unmount
-    return unsubscribe;
+    return () => clearTimeout(timer);
   }, []);
 
   return { user, loading };

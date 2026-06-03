@@ -11,6 +11,8 @@ import HomeScreen from '../screens/HomeScreen';
 import MarketplaceScreen from '../screens/MarketplaceScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import DirectoryScreen from '../screens/DirectoryScreen';
+import WalletScreen from '../screens/WalletScreen';
 
 // ─── Hook (create this in src/hooks/useAuth.ts) ────────────────────────────
 import { useAuth } from '../hooks/useAuth';
@@ -23,9 +25,10 @@ export const ROUTES = {
 
   // Main tabs
   HOME: 'Home',
+  DIRECTORY: 'Directory',
   MARKETPLACE: 'Marketplace',
   CHAT: 'Chat',
-  PROFILE: 'Profile',
+  WALLET: 'Wallet',
 } as const;
 
 // ─── TypeScript route param types ─────────────────────────────────────────
@@ -36,9 +39,10 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   Home: undefined;
+  Directory: undefined;
   Marketplace: undefined;
   Chat: undefined;
-  Profile: undefined;
+  Wallet: undefined;
 };
 
 // ─── Stack + Tab navigator instances ──────────────────────────────────────
@@ -55,9 +59,10 @@ const TabIcon = ({
 }) => {
   const icons: Record<string, string> = {
     Home: '🏠',
+    Directory: '👥',
     Marketplace: '🛍️',
     Chat: '💬',
-    Profile: '👤',
+    Wallet: '💳',
   };
   return (
     <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.4 }}>
@@ -71,10 +76,9 @@ const MainTabNavigator = () => (
   <MainTab.Navigator
     screenOptions={({ route }) => ({
       headerShown: false,
-      tabBarShowLabel: true,
-      tabBarLabelStyle: styles.tabLabel,
+      tabBarShowLabel: false,
       tabBarStyle: styles.tabBar,
-      tabBarActiveTintColor: '#6C47FF',
+      tabBarActiveTintColor: '#0052FF',
       tabBarInactiveTintColor: '#9E9E9E',
       tabBarIcon: ({ focused }) => (
         <TabIcon label={route.name} focused={focused} />
@@ -82,9 +86,10 @@ const MainTabNavigator = () => (
     })}
   >
     <MainTab.Screen name={ROUTES.HOME} component={HomeScreen} />
+    <MainTab.Screen name={ROUTES.DIRECTORY} component={DirectoryScreen} />
     <MainTab.Screen name={ROUTES.MARKETPLACE} component={MarketplaceScreen} />
     <MainTab.Screen name={ROUTES.CHAT} component={ChatScreen} />
-    <MainTab.Screen name={ROUTES.PROFILE} component={ProfileScreen} />
+    <MainTab.Screen name={ROUTES.WALLET} component={WalletScreen} />
   </MainTab.Navigator>
 );
 
@@ -116,8 +121,8 @@ const AuthNavigator = () => (
 // ─── Loading splash ────────────────────────────────────────────────────────
 const LoadingScreen = () => (
   <View style={styles.loadingContainer}>
-    <ActivityIndicator size="large" color="#6C47FF" />
-    <Text style={styles.loadingText}>CollegeApp</Text>
+    <ActivityIndicator size="large" color="#0052FF" />
+    <Text style={styles.loadingText}>College Hub</Text>
   </View>
 );
 
@@ -140,16 +145,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopWidth: 0.5,
     borderTopColor: '#E0E0E0',
-    height: 64,
-    paddingBottom: 8,
-    paddingTop: 6,
+    height: 70,
+    paddingBottom: 20,
+    paddingTop: 8,
     elevation: 0,
     shadowOpacity: 0,
-  },
-  tabLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    marginTop: 2,
   },
   loadingContainer: {
     flex: 1,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#6C47FF',
+    color: '#0052FF',
     letterSpacing: -0.5,
   },
 });
