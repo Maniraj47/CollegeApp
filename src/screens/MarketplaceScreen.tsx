@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -62,15 +63,36 @@ const MarketplaceScreen = () => {
   const navigation = useNavigation<any>();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All Items');
+  const [items, setItems] = useState<any[]>([]);
 
-  const filteredItems = ITEMS.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          item.category.toLowerCase().includes(searchQuery.toLowerCase());
+  React.useEffect(() => {
+    const subscriber = firestore()
+      .collection('products')
+      .onSnapshot(querySnapshot => {
+        const productsData = querySnapshot.docs.map(documentSnapshot => ({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+        }));
+        
+        if (productsData.length === 0) {
+          setItems(ITEMS); // Fallback to mock data
+        } else {
+          setItems(productsData);
+        }
+      });
+    return () => subscriber();
+  }, []);
+
+  const filteredItems = items.filter(item => {
+    const title = item.title || '';
+    const category = item.category || '';
+    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          category.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCategory = activeCategory === 'All Items' || 
-      (activeCategory === 'Dorm Essentials' && item.category === 'Dorm Stuff') ||
-      (activeCategory === 'Tutoring Services' && item.category === 'Tutoring') ||
-      (item.category === activeCategory);
+      (activeCategory === 'Dorm Essentials' && category === 'Dorm Stuff') ||
+      (activeCategory === 'Tutoring Services' && category === 'Tutoring') ||
+      (category === activeCategory);
       
     return matchesSearch && matchesCategory;
   });
@@ -137,8 +159,8 @@ const MarketplaceScreen = () => {
                 <View style={styles.cardFooter}>
                   <Text style={styles.itemCategory}>{item.category}</Text>
                   <View style={styles.sellerRow}>
-                    <Image source={{ uri: item.sellerAvatar }} style={styles.sellerAvatar} />
-                    <Text style={styles.sellerName} numberOfLines={1}>{item.seller}</Text>
+                    <Image source={{ uri: item.sellerAvatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.sellerAvatar} />
+                    <Text style={styles.sellerName} numberOfLines={1}>{item.sellerName || item.seller || 'Student'}</Text>
                   </View>
                 </View>
               </View>

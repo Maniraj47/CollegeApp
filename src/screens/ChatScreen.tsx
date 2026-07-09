@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -54,9 +55,29 @@ const CHATS = [
 const ChatScreen = () => {
   const navigation = useNavigation<any>();
   const [searchQuery, setSearchQuery] = useState('');
+  const [chats, setChats] = useState<any[]>([]);
 
-  const filteredChats = CHATS.filter(chat => 
-    chat.user.toLowerCase().includes(searchQuery.toLowerCase())
+  React.useEffect(() => {
+    const subscriber = firestore()
+      .collection('chats')
+      .orderBy('updatedAt', 'desc')
+      .onSnapshot(querySnapshot => {
+        const chatsData = querySnapshot.docs.map(documentSnapshot => ({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+        }));
+        
+        if (chatsData.length === 0) {
+          setChats(CHATS); // Fallback to mock data
+        } else {
+          setChats(chatsData);
+        }
+      });
+    return () => subscriber();
+  }, []);
+
+  const filteredChats = chats.filter(chat => 
+    (chat.user || chat.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -105,7 +126,7 @@ const ChatScreen = () => {
                   </View>
                 ) : (
                   <>
-                    <Image source={{ uri: chat.avatar }} style={styles.avatar} />
+                    <Image source={{ uri: chat.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.avatar} />
                     {chat.online && <View style={styles.onlineDot} />}
                   </>
                 )}
@@ -114,7 +135,7 @@ const ChatScreen = () => {
               <View style={styles.chatInfo}>
                 <View style={styles.chatRowTop}>
                   <View style={styles.nameRow}>
-                    <Text style={styles.chatName}>{chat.user}</Text>
+                    <Text style={styles.chatName}>{chat.user || chat.name}</Text>
                     {chat.verified && <View style={styles.badge}><Text style={styles.badgeText}>✓</Text></View>}
                   </View>
                   <Text style={[styles.chatTime, chat.unread > 0 && { color: C.primary }]}>{chat.time}</Text>

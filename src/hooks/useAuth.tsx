@@ -1,30 +1,26 @@
-import React, { createContext, use, useMemo, useCallback, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 type AuthState = {
-  user: any | null;
+  user: FirebaseAuthTypes.User | null;
   loading: boolean;
-  login: () => void;
-  logout: () => void;
 };
 
-const AuthContext = createContext<AuthState>({} as AuthState);
+const AuthContext = createContext<AuthState>({ user: null, loading: true });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial mock login state
-    const timer = setTimeout(() => {
-      setUser({ uid: 'mock-user-123' });
-      setLoading(false);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+    const subscriber = auth().onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      if (loading) setLoading(false);
+    });
+    return subscriber; // unsubscribe on unmount
+  }, [loading]);
 
-  const login = useCallback(() => setUser({ uid: 'mock-user-123' }), []);
-  const logout = useCallback(() => setUser(null), []);
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
+  const value = useMemo(() => ({ user, loading }), [user, loading]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -33,4 +29,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useAuth = () => use(AuthContext);
+export const useAuth = () => useContext(AuthContext);

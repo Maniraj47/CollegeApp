@@ -2,20 +2,48 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+import { useAuth } from '../hooks/useAuth';
 
 const CreatePostScreen = () => {
   const navigation = useNavigation();
+  const { user } = useAuth();
   const [text, setText] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!text && !imageUrl) {
       Alert.alert('Empty Post', 'Please add some text or an image URL to post.');
       return;
     }
-    Alert.alert('Success', 'Your post has been created!', [
-      { text: 'OK', onPress: () => navigation.goBack() }
-    ]);
+    setLoading(true);
+    try {
+      // Get author name from users collection or use a generic one
+      let authorName = 'Student';
+      if (user?.uid) {
+        const userDoc = await firestore().collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          authorName = userDoc.data()?.name || 'Student';
+        }
+      }
+
+      await firestore().collection('posts').add({
+        text,
+        imageUrl: imageUrl || null,
+        authorId: user?.uid,
+        authorName,
+        authorAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE',
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        likes: 0,
+        comments: 0,
+      });
+      setLoading(false);
+      navigation.goBack();
+    } catch (error) {
+      setLoading(false);
+      Alert.alert('Error', 'Failed to create post. Please try again.');
+    }
   };
 
   return (
@@ -25,8 +53,8 @@ const CreatePostScreen = () => {
           <Text style={styles.headerBtn}>Cancel</Text>
         </Pressable>
         <Text style={styles.headerTitle}>New Post</Text>
-        <Pressable onPress={handlePost} style={styles.postBtn}>
-          <Text style={styles.postBtnText}>Post</Text>
+        <Pressable onPress={handlePost} style={[styles.postBtn, loading && { opacity: 0.5 }]} disabled={loading}>
+          <Text style={styles.postBtnText}>{loading ? 'Posting...' : 'Post'}</Text>
         </Pressable>
       </View>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>

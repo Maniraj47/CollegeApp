@@ -38,7 +38,7 @@ const ProductDetailScreen = ({ route }: any) => {
         
         {/* Image Section */}
         <View style={styles.imageContainer}>
-          <Image source={{ uri: product.image }} style={styles.heroImage} resizeMode="cover" />
+          <Image source={{ uri: product.image || product.imageUrl }} style={styles.heroImage} resizeMode="cover" />
           
           {/* Top Actions */}
           <SafeAreaView style={styles.topActionsSafeArea}>
@@ -88,10 +88,10 @@ const ProductDetailScreen = ({ route }: any) => {
 
           {/* Seller */}
           <Pressable style={styles.sellerCard} onPress={() => navigation.navigate('Profile')}>
-            <Image source={{ uri: product.sellerAvatar }} style={styles.sellerAvatar} />
+            <Image source={{ uri: product.sellerAvatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.sellerAvatar} />
             <View style={styles.sellerInfo}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Text style={styles.sellerName}>{product.seller}</Text>
+                <Text style={styles.sellerName}>{product.sellerName || product.seller}</Text>
                 <View style={styles.verifiedBadge}><Text style={styles.verifiedText}>✓</Text></View>
               </View>
               <Text style={styles.sellerStats}>⭐ 4.9 (24 trusted trades)</Text>
@@ -180,7 +180,7 @@ const ProductDetailScreen = ({ route }: any) => {
 
       {/* Sticky Bottom Actions */}
       <View style={styles.bottomBar}>
-        <Pressable style={styles.messageBtn} onPress={() => navigation.navigate('ChatDetail', { chat: { name: product.seller } })}>
+        <Pressable style={styles.messageBtn} onPress={() => navigation.navigate('ChatDetail', { chat: { name: product.sellerName || product.seller } })}>
           <Text style={styles.messageBtnText}>💬 Message</Text>
         </Pressable>
         <Pressable style={styles.buyBtn} onPress={() => Alert.alert('Purchase Started', 'Setting up secure escrow for this transaction...')}>

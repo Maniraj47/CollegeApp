@@ -1,6 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with your Web Client ID
+  iosClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com',
+});
 
 const C = {
   background: '#f7f9fb',
@@ -15,6 +23,78 @@ const C = {
 };
 
 const RegisterScreen = ({ navigation }: any) => {
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const handleRegister = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    
+    try {
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      const uid = userCredential.user.uid;
+      
+      await firestore().collection('users').doc(uid).set({
+        uid,
+        name,
+        email,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
+      // Auth listener in useAuth will automatically redirect
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleRegister = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const signInResult = await GoogleSignin.signIn();
+      let idToken = signInResult.data?.idToken;
+      
+      if (!idToken) {
+        throw new Error('No ID token found');
+      }
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const userCredential = await auth().signInWithCredential(googleCredential);
+      
+      const uid = userCredential.user.uid;
+      const userEmail = userCredential.user.email || '';
+      const userName = userCredential.user.displayName || 'Google User';
+
+      // Check if user already exists
+      const userDoc = await firestore().collection('users').doc(uid).get();
+      if (!userDoc.exists) {
+        await firestore().collection('users').doc(uid).set({
+          uid,
+          name: userName,
+          email: userEmail,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (err: any) {
+      setError(err.message || 'Google Registration failed');
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView 
@@ -32,6 +112,7 @@ const RegisterScreen = ({ navigation }: any) => {
             <View style={styles.cardHeader}>
               <Text style={styles.title}>Create an account</Text>
               <Text style={styles.subtitle}>Sign up with your university email to get started.</Text>
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
             </View>
 
             <View style={styles.form}>
@@ -44,6 +125,8 @@ const RegisterScreen = ({ navigation }: any) => {
                     style={styles.input}
                     placeholder="Jane Doe"
                     placeholderTextColor={C.outlineVariant}
+                    value={name}
+                    onChangeText={setName}
                   />
                 </View>
               </View>
@@ -58,6 +141,8 @@ const RegisterScreen = ({ navigation }: any) => {
                     placeholderTextColor={C.outlineVariant}
                     keyboardType="email-address"
                     autoCapitalize="none"
+                    value={email}
+                    onChangeText={setEmail}
                   />
                 </View>
                 <Text style={styles.infoText}>ℹ️ Must end in .edu for campus verification</Text>
@@ -72,6 +157,8 @@ const RegisterScreen = ({ navigation }: any) => {
                     placeholder="••••••••"
                     placeholderTextColor={C.outlineVariant}
                     secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
                   />
                 </View>
               </View>
@@ -85,6 +172,8 @@ const RegisterScreen = ({ navigation }: any) => {
                     placeholder="••••••••"
                     placeholderTextColor={C.outlineVariant}
                     secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
                   />
                 </View>
               </View>
@@ -96,8 +185,18 @@ const RegisterScreen = ({ navigation }: any) => {
                 </Text>
               </View>
 
-              <Pressable style={styles.submitBtn}>
-                <Text style={styles.submitBtnText}>Create Account ➔</Text>
+              <Pressable style={styles.submitBtn} onPress={handleRegister} disabled={loading}>
+                <Text style={styles.submitBtnText}>{loading ? 'Creating Account...' : 'Create Account ➔'}</Text>
+              </Pressable>
+
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>OR</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <Pressable style={styles.googleBtn} onPress={handleGoogleRegister} disabled={loading}>
+                <Text style={styles.googleBtnText}>Sign up with Google</Text>
               </Pressable>
 
               <View style={styles.loginRow}>
@@ -136,6 +235,7 @@ const styles = StyleSheet.create({
   cardHeader: { marginBottom: 24 },
   title: { fontSize: 24, fontWeight: '700', color: C.onSurface, marginBottom: 4 },
   subtitle: { fontSize: 16, color: C.onSurfaceVariant },
+  errorText: { color: 'red', marginTop: 8, fontSize: 14 },
   
   form: { gap: 16 },
   inputGroup: { gap: 4 },
@@ -153,6 +253,13 @@ const styles = StyleSheet.create({
   
   submitBtn: { backgroundColor: C.primary, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginTop: 16, shadowColor: 'rgba(0,0,0,0.1)', shadowOpacity: 1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
   submitBtnText: { color: 'white', fontSize: 16, fontWeight: '700' },
+  
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 8 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: C.outlineVariant },
+  dividerText: { marginHorizontal: 16, fontSize: 14, color: C.outline, fontWeight: '600' },
+  
+  googleBtn: { backgroundColor: C.surfaceLowest, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: C.outlineVariant },
+  googleBtnText: { color: C.onSurface, fontSize: 16, fontWeight: '600' },
   
   loginRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 16 },
   loginText: { fontSize: 16, color: C.onSurfaceVariant },

@@ -1,93 +1,96 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../hooks/useAuth';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with your Web Client ID
+  iosClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com',
+});
 
 const C = {
   background: '#f7f9fb',
   surfaceLowest: '#ffffff',
   primary: '#003ec7',
-  primaryContainer: '#0052ff',
   onSurface: '#191c1e',
   onSurfaceVariant: '#434656',
-  outline: '#737688',
   outlineVariant: '#c3c5d9',
-  secondary: '#a04100',
 };
 
-const LoginScreen = ({ navigation }: any) => {
-  const { login } = useAuth();
+const LoginScreen = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Check if your device supports Google Play (Android only, resolves instantly on iOS)
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      
+      // Sign in with Google
+      const signInResult = await GoogleSignin.signIn();
+      let idToken = signInResult.data?.idToken;
+      
+      if (!idToken) {
+        throw new Error('No ID token found');
+      }
+
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
+      const userCredential = await auth().signInWithCredential(googleCredential);
+
+      // Check if this is a new user and create a Firestore document if so
+      const uid = userCredential.user.uid;
+      const userDoc = await firestore().collection('users').doc(uid).get();
+      if (!userDoc.exists) {
+        await firestore().collection('users').doc(uid).set({
+          uid,
+          name: userCredential.user.displayName || 'Google User',
+          email: userCredential.user.email || '',
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (err: any) {
+      setError(err.message || 'Google Login failed');
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        style={styles.keyboardView}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          
-          <View style={styles.logoContainer}>
-            <View style={styles.logoIcon}><Text style={styles.logoIconText}>🎓</Text></View>
-            <Text style={styles.logoText}>College Hub</Text>
-          </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        
+        <View style={styles.logoContainer}>
+          <View style={styles.logoIcon}><Text style={styles.logoIconText}>🎓</Text></View>
+          <Text style={styles.logoText}>College Hub</Text>
+        </View>
 
-          <View style={styles.header}>
-            <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.subtitle}>Enter your details to access your account.</Text>
-          </View>
+        <View style={styles.header}>
+          <Text style={styles.title}>Welcome to College Hub</Text>
+          <Text style={styles.subtitle}>Sign in with your university Google account to connect with your campus.</Text>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        </View>
 
-          <View style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address</Text>
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputIcon}>✉️</Text>
-                <TextInput 
-                  style={styles.input}
-                  placeholder="student@university.edu"
-                  placeholderTextColor={C.outline}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-            </View>
+        <View style={styles.form}>
+          <Pressable style={styles.googleBtn} onPress={handleGoogleLogin} disabled={loading}>
+            <Text style={styles.googleIcon}>G</Text>
+            <Text style={styles.googleBtnText}>{loading ? 'Signing in...' : 'Sign in with Google'}</Text>
+          </Pressable>
+        </View>
 
-            <View style={styles.inputGroup}>
-              <View style={styles.passwordLabelRow}>
-                <Text style={styles.label}>Password</Text>
-                <Pressable><Text style={styles.forgotText}>Forgot Password?</Text></Pressable>
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputIcon}>🔒</Text>
-                <TextInput 
-                  style={styles.input}
-                  placeholder="••••••••"
-                  placeholderTextColor={C.outline}
-                  secureTextEntry
-                />
-                <Pressable style={styles.eyeIcon}><Text>👁️</Text></Pressable>
-              </View>
-            </View>
-
-            <Pressable style={styles.loginBtn} onPress={login}>
-              <Text style={styles.loginBtnText}>Login</Text>
-            </Pressable>
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>New to campus? </Text>
-            <Pressable onPress={() => navigation?.navigate('Register')}>
-              <Text style={styles.signupText}>Sign up</Text>
-            </Pressable>
-          </View>
-
-        </ScrollView>
-      </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: C.background },
-  keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, paddingHorizontal: 24, justifyContent: 'center' },
   
   logoContainer: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 40 },
@@ -97,25 +100,14 @@ const styles = StyleSheet.create({
   
   header: { marginBottom: 32 },
   title: { fontSize: 32, fontWeight: '800', color: C.onSurface, marginBottom: 8 },
-  subtitle: { fontSize: 16, color: C.onSurfaceVariant },
+  subtitle: { fontSize: 16, color: C.onSurfaceVariant, lineHeight: 22 },
+  errorText: { color: 'red', marginTop: 12, fontSize: 14 },
   
-  form: { gap: 24 },
-  inputGroup: { gap: 8 },
-  label: { fontSize: 14, fontWeight: '600', color: C.onSurface },
-  passwordLabelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  forgotText: { fontSize: 12, color: C.primary, fontWeight: '600' },
+  form: { gap: 24, marginTop: 16 },
   
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.surfaceLowest, borderRadius: 8, borderWidth: 1, borderColor: C.outlineVariant, height: 48 },
-  inputIcon: { paddingHorizontal: 12, fontSize: 16, color: C.outline },
-  input: { flex: 1, height: '100%', fontSize: 16, color: C.onSurface },
-  eyeIcon: { paddingHorizontal: 12 },
-  
-  loginBtn: { backgroundColor: C.primary, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center', marginTop: 16, shadowColor: C.primary, shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 4 } },
-  loginBtnText: { color: 'white', fontSize: 16, fontWeight: '700' },
-  
-  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderTopColor: 'rgba(195,197,217,0.3)' },
-  footerText: { fontSize: 16, color: C.onSurfaceVariant },
-  signupText: { fontSize: 16, color: C.secondary, fontWeight: '700' },
+  googleBtn: { backgroundColor: C.surfaceLowest, height: 56, borderRadius: 28, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', shadowColor: 'rgba(0,0,0,0.1)', shadowOpacity: 1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, borderWidth: 1, borderColor: C.outlineVariant },
+  googleIcon: { fontSize: 20, fontWeight: '800', marginRight: 12, color: '#DB4437' },
+  googleBtnText: { color: C.onSurface, fontSize: 16, fontWeight: '700' },
 });
 
 export default LoginScreen;

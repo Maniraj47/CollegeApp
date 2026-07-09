@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+import { useAuth } from '../hooks/useAuth';
 
 const C = {
   background: '#fafbfc',
@@ -35,6 +37,34 @@ const ChatDetailScreen = ({ route }: any) => {
       online: true,
     }
   };
+  const { user } = useAuth();
+  const chatId = chat.id || 'default_chat';
+
+  React.useEffect(() => {
+    const subscriber = firestore()
+      .collection('chats')
+      .doc(chatId)
+      .collection('messages')
+      .orderBy('createdAt', 'asc')
+      .onSnapshot(querySnapshot => {
+        const msgs = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            text: data.text,
+            time: 'Just now',
+            outgoing: data.authorId === user?.uid,
+            ...data
+          };
+        });
+        if (msgs.length === 0) {
+          setMessages(INITIAL_MESSAGES);
+        } else {
+          setMessages(msgs);
+        }
+      });
+    return () => subscriber();
+  }, [chatId, user]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -55,7 +85,7 @@ const ChatDetailScreen = ({ route }: any) => {
             </View>
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Text style={styles.headerName}>{chat.user}</Text>
+                <Text style={styles.headerName}>{chat.user || chat.name}</Text>
                 {chat.verified && <View style={styles.verifiedBadge}><Text style={styles.verifiedText}>✓</Text></View>}
               </View>
               {chat.online && <Text style={styles.onlineText}>Online</Text>}
@@ -78,9 +108,9 @@ const ChatDetailScreen = ({ route }: any) => {
             </View>
           </View>
 
-          {messages.map(msg => (
+          {messages.map((msg: any) => (
             <View key={msg.id} style={[styles.messageRow, msg.outgoing ? styles.messageRowOutgoing : styles.messageRowIncoming]}>
-              {!msg.outgoing && <Image source={{ uri: chat.avatar }} style={styles.messageAvatar} />}
+              {!msg.outgoing && <Image source={{ uri: chat.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.messageAvatar} />}
               <View style={msg.outgoing ? { alignItems: 'flex-end' } : {}}>
                 <View style={[styles.bubble, msg.outgoing ? styles.bubbleOutgoing : styles.bubbleIncoming]}>
                   <Text style={msg.outgoing ? styles.textOutgoing : styles.textIncoming}>{msg.text}</Text>
@@ -121,10 +151,20 @@ const ChatDetailScreen = ({ route }: any) => {
           
           <Pressable 
             style={styles.sendBtn} 
-            onPress={() => {
+            onPress={async () => {
               if (inputText.trim()) {
-                setMessages([...messages, { id: Date.now().toString(), text: inputText, time: 'Just now', outgoing: true }]);
+                const text = inputText;
                 setInputText('');
+                try {
+                  await firestore().collection('chats').doc(chatId).collection('messages').add({
+                    text,
+                    authorId: user?.uid,
+                    createdAt: firestore.FieldValue.serverTimestamp(),
+                  });
+                } catch (e) {
+                  // Fallback for demo if firestore fails
+                  setMessages([...messages, { id: Date.now().toString(), text, time: 'Just now', outgoing: true }]);
+                }
               }
             }}
           >

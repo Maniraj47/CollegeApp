@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -26,9 +27,27 @@ const INITIAL_STUDENTS = [
 
 const DirectoryScreen = () => {
   const navigation = useNavigation<any>();
-  const [students, setStudents] = useState(INITIAL_STUDENTS);
+  const [students, setStudents] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All Students');
+
+  React.useEffect(() => {
+    const subscriber = firestore()
+      .collection('users')
+      .onSnapshot(querySnapshot => {
+        const usersData = querySnapshot.docs.map(documentSnapshot => ({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+        }));
+        
+        if (usersData.length === 0) {
+          setStudents(INITIAL_STUDENTS); // fallback
+        } else {
+          setStudents(usersData);
+        }
+      });
+    return () => subscriber();
+  }, []);
 
   const handleAction = (id: string, action: string) => {
     if (action === 'Connect') {
@@ -40,10 +59,16 @@ const DirectoryScreen = () => {
   };
 
   const filteredStudents = students.filter(student => {
+    const name = student.name || '';
+    const email = student.email || '';
+    const major = student.major || '';
+    const studentId = student.studentId || '';
+
     const matchesSearch = 
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      student.major.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      student.studentId.toLowerCase().includes(searchQuery.toLowerCase());
+      name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      email.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      major.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      studentId.toLowerCase().includes(searchQuery.toLowerCase());
     
     let matchesFilter = true;
     if (activeFilter === 'Engineering') {
@@ -108,19 +133,21 @@ const DirectoryScreen = () => {
           {filteredStudents.length > 0 ? filteredStudents.map(student => (
             <View key={student.id} style={styles.card}>
               <View style={styles.cardTop}>
-                <Text style={styles.studentName}>{student.name}</Text>
+                <Text style={styles.studentName}>{student.name || 'Student'}</Text>
                 {student.verified && <View style={styles.verifiedBadge}><Text style={styles.verifiedText}>✓</Text></View>}
               </View>
               
               <View style={styles.cardBody}>
                 <View style={styles.infoRow}>
-                  <Text style={styles.infoIcon}>🏫</Text>
-                  <Text style={styles.infoText}>{student.major}</Text>
+                  <Text style={styles.infoIcon}>{student.major ? '🏫' : '✉️'}</Text>
+                  <Text style={styles.infoText}>{student.major || student.email || 'Undeclared'}</Text>
                 </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoIcon}>🪪</Text>
-                  <Text style={styles.infoId}>ID: {student.studentId}</Text>
-                </View>
+                {student.studentId && (
+                  <View style={styles.infoRow}>
+                    <Text style={styles.infoIcon}>🪪</Text>
+                    <Text style={styles.infoId}>ID: {student.studentId}</Text>
+                  </View>
+                )}
               </View>
               
               <Pressable 

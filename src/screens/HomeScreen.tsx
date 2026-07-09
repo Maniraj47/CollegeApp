@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -54,9 +55,30 @@ const HomeScreen = () => {
   const [pollVotes, setPollVotes] = useState(INITIAL_POLL.votes);
   const [hasVoted, setHasVoted] = useState(false);
   
-  const [posts, setPosts] = useState(POSTS);
+  const [posts, setPosts] = useState<any[]>([]);
   const [pollLikes, setPollLikes] = useState(INITIAL_POLL.likes);
   const [pollCommentCount, setPollCommentCount] = useState(INITIAL_POLL.comments);
+
+  // Fetch posts from Firestore
+  React.useEffect(() => {
+    const subscriber = firestore()
+      .collection('posts')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(querySnapshot => {
+        const postsData = querySnapshot.docs.map(documentSnapshot => ({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+        }));
+        
+        // If there are no posts, we can show the mock posts as fallback for demo
+        if (postsData.length === 0) {
+          setPosts(POSTS);
+        } else {
+          setPosts(postsData);
+        }
+      });
+    return () => subscriber();
+  }, []);
 
   // Comments modal state
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
@@ -160,19 +182,19 @@ const HomeScreen = () => {
           <View key={post.id} style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={styles.cardUser}>
-                <Image source={{ uri: post.avatar }} style={styles.avatar} />
+                <Image source={{ uri: post.authorAvatar || post.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.avatar} />
                 <View>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.userName}>{post.user}</Text>
+                    <Text style={styles.userName}>{post.authorName || post.user || 'Student'}</Text>
                     {post.verified && <View style={styles.badge}><Text style={styles.badgeText}>✓</Text></View>}
                   </View>
-                  <Text style={styles.timeLocation}>{post.time} • {post.location}</Text>
+                  <Text style={styles.timeLocation}>{post.time || 'Just now'} • {post.location || 'Campus'}</Text>
                 </View>
               </View>
               <Pressable onPress={() => handleMoreOptions(post.id)}><Text style={styles.moreIcon}>•••</Text></Pressable>
             </View>
-            <Text style={styles.postText}>{post.text}</Text>
-            {post.image && <Image source={{ uri: post.image }} style={styles.postImage} />}
+            {post.text ? <Text style={styles.postText}>{post.text}</Text> : null}
+            {post.image || post.imageUrl ? <Image source={{ uri: post.image || post.imageUrl }} style={styles.postImage} /> : null}
             <View style={styles.actions}>
               <Pressable style={styles.actionChip} onPress={() => handleLike(post.id)}>
                 <Text style={styles.actionIcon}>❤️</Text>
