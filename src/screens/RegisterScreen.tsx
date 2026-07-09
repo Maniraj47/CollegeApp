@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const C = {
@@ -96,15 +96,15 @@ const RegisterScreen = ({ navigation }: any) => {
                 </Text>
               </View>
 
-              <TouchableOpacity style={styles.submitBtn}>
+              <Pressable style={styles.submitBtn}>
                 <Text style={styles.submitBtnText}>Create Account ➔</Text>
-              </TouchableOpacity>
+              </Pressable>
 
               <View style={styles.loginRow}>
                 <Text style={styles.loginText}>Already have an account? </Text>
-                <TouchableOpacity onPress={() => navigation?.navigate('Login')}>
+                <Pressable onPress={() => navigation?.navigate('Login')}>
                   <Text style={styles.loginLink}>Log in</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           </View>

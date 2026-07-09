@@ -1,12 +1,9 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 // ─── Screen imports (create these files in src/screens/) ───────────────────
 import LoginScreen from '../screens/LoginScreen';
@@ -68,8 +65,8 @@ export type MainStackParamList = {
 };
 
 // ─── Stack + Tab navigator instances ──────────────────────────────────────
-const AuthStack = createStackNavigator<AuthStackParamList>();
-const MainStack = createStackNavigator<MainStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const MainStack = createNativeStackNavigator<MainStackParamList>();
 const MainTab = createBottomTabNavigator<MainTabParamList>();
 
 // ─── Custom Tab Bar ────────────────────────────────────────────────────────
@@ -81,7 +78,6 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
         const isFocused = state.index === index;
 
         const onPress = () => {
-          LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
@@ -102,23 +98,26 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
         };
 
         return (
-          <TouchableOpacity
+          <Pressable
             key={route.key}
             onPress={onPress}
-            activeOpacity={0.8}
-            style={{
+            style={({ pressed }) => ({
               justifyContent: 'center',
               alignItems: 'center',
-            }}
+              opacity: pressed ? 0.8 : 1,
+            })}
           >
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: isFocused ? '#111111' : 'transparent',
-              padding: isFocused ? 6 : 0,
-              paddingRight: isFocused ? 16 : 0,
-              borderRadius: 30,
-            }}>
+            <Animated.View
+              layout={LinearTransition.springify()}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: isFocused ? '#111111' : 'transparent',
+                padding: isFocused ? 6 : 0,
+                paddingRight: isFocused ? 16 : 0,
+                borderRadius: 30,
+              }}
+            >
               <View style={{
                 backgroundColor: isFocused ? '#0052FF' : '#F5F5F5',
                 width: 44,
@@ -144,8 +143,8 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
                   {route.name}
                 </Text>
               )}
-            </View>
-          </TouchableOpacity>
+            </Animated.View>
+          </Pressable>
         );
       })}
     </View>
@@ -184,19 +183,7 @@ const AuthNavigator = () => (
   <AuthStack.Navigator
     screenOptions={{
       headerShown: false,
-      cardStyleInterpolator: ({ current, layouts }) => ({
-        cardStyle: {
-          opacity: current.progress,
-          transform: [
-            {
-              translateY: current.progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: [layouts.screen.height * 0.05, 0],
-              }),
-            },
-          ],
-        },
-      }),
+      animation: 'fade_from_bottom',
     }}
   >
     <AuthStack.Screen name={ROUTES.LOGIN} component={LoginScreen} />

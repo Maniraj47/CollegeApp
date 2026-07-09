@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -24,13 +24,13 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.goBack()}>
+        <Pressable style={styles.iconBtn} onPress={() => navigation.goBack()}>
           <Text style={styles.iconTxt}>←</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn}>
+        <Pressable style={styles.profileBtn}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatarSmall} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -54,8 +54,8 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
               />
             </View>
             <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.editBtn}><Text style={styles.editBtnText}>Edit Profile</Text></TouchableOpacity>
-              <TouchableOpacity style={styles.shareBtn}><Text style={styles.shareBtnIcon}>↗️</Text></TouchableOpacity>
+              <Pressable style={styles.editBtn}><Text style={styles.editBtnText}>Edit Profile</Text></Pressable>
+              <Pressable style={styles.shareBtn}><Text style={styles.shareBtnIcon}>↗️</Text></Pressable>
             </View>
           </View>
           
@@ -90,36 +90,36 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
           
           <View style={styles.bentoBottomRow}>
             {/* Wallet */}
-            <TouchableOpacity style={styles.walletCard}>
+            <Pressable style={styles.walletCard}>
               <Text style={styles.walletIcon}>💳</Text>
               <View>
                 <Text style={styles.walletLabel}>Campus Wallet</Text>
                 <Text style={styles.walletAmount}>$45.50</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
             
             {/* Settings */}
-            <TouchableOpacity style={styles.settingsCard} onPress={() => navigation.navigate('Settings')}>
+            <Pressable style={styles.settingsCard} onPress={() => navigation.navigate('Settings')}>
               <Text style={styles.settingsIcon}>⚙️</Text>
               <View>
                 <Text style={styles.settingsTitle}>Preferences</Text>
                 <Text style={styles.settingsSub}>Account & Security</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
         {/* Tabs */}
         <View style={styles.tabsContainer}>
-          <TouchableOpacity style={[styles.tab, styles.activeTab]}>
+          <Pressable style={[styles.tab, styles.activeTab]}>
             <Text style={[styles.tabText, styles.activeTabText]}>Activity Feed</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tab}>
+          </Pressable>
+          <Pressable style={styles.tab}>
             <Text style={styles.tabText}>Active Listings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tab}>
+          </Pressable>
+          <Pressable style={styles.tab}>
             <Text style={styles.tabText}>Saved Items</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Post */}
@@ -147,12 +147,12 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
             <Text style={styles.postDesc}>Upgrading to a MacBook, so selling my iPad. Used gently for note-taking in lectures. Comes with the original box and a protective case. Escrow preferred!</Text>
             
             <View style={styles.postActions}>
-              <TouchableOpacity style={styles.buyBtn}>
+              <Pressable style={styles.buyBtn}>
                 <Text style={styles.buyBtnText}>🛒 Buy Now</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.msgBtn}>
+              </Pressable>
+              <Pressable style={styles.msgBtn}>
                 <Text style={styles.msgBtnText}>💬 Message</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>

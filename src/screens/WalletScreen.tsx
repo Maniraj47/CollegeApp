@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -31,17 +31,17 @@ const WalletScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}><Text style={styles.iconTxt}>🔍</Text></TouchableOpacity>
+        <Pressable style={styles.iconBtn}><Text style={styles.iconTxt}>🔍</Text></Pressable>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+        <Pressable style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatar} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.topSection}>
           <Text style={styles.screenTitle}>Wallet</Text>
-          <TouchableOpacity style={styles.settingsBtn}><Text style={styles.settingsIcon}>⚙️</Text></TouchableOpacity>
+          <Pressable style={styles.settingsBtn}><Text style={styles.settingsIcon}>⚙️</Text></Pressable>
         </View>
 
         <View style={styles.cardsRow}>
@@ -58,13 +58,13 @@ const WalletScreen = () => {
               </View>
             </View>
             <View style={styles.balanceActions}>
-              <TouchableOpacity style={styles.withdrawBtn}>
+              <Pressable style={styles.withdrawBtn}>
                 <Text style={styles.withdrawIcon}>⬆️</Text>
                 <Text style={styles.withdrawText}>Withdraw</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.historyBtn}>
+              </Pressable>
+              <Pressable style={styles.historyBtn}>
                 <Text style={styles.historyIcon}>🕒</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
@@ -100,20 +100,20 @@ const WalletScreen = () => {
         <View style={styles.quickDepositCard}>
           <Text style={styles.sectionTitle}>Quick Deposit</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetScroll}>
-            <TouchableOpacity style={styles.presetChip}><Text style={styles.presetText}>+₹500</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.presetChip, styles.presetChipActive]}><Text style={[styles.presetText, styles.presetTextActive]}>+₹1,000</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.presetChip}><Text style={styles.presetText}>+₹2,500</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.presetChip}><Text style={styles.presetText}>+₹5,000</Text></TouchableOpacity>
+            <Pressable style={styles.presetChip}><Text style={styles.presetText}>+₹500</Text></Pressable>
+            <Pressable style={[styles.presetChip, styles.presetChipActive]}><Text style={[styles.presetText, styles.presetTextActive]}>+₹1,000</Text></Pressable>
+            <Pressable style={styles.presetChip}><Text style={styles.presetText}>+₹2,500</Text></Pressable>
+            <Pressable style={styles.presetChip}><Text style={styles.presetText}>+₹5,000</Text></Pressable>
           </ScrollView>
           <View style={styles.depositActionRow}>
             <View style={styles.depositInputContainer}>
               <Text style={styles.currencySymbol}>₹</Text>
               <TextInput style={styles.depositInput} value="1000" keyboardType="numeric" />
             </View>
-            <TouchableOpacity style={styles.payBtn}>
+            <Pressable style={styles.payBtn}>
               <Text style={styles.payIcon}>🏦</Text>
               <Text style={styles.payBtnText}>Pay with UPI</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
@@ -121,12 +121,12 @@ const WalletScreen = () => {
         <View style={styles.activitySection}>
           <View style={styles.activityHeader}>
             <Text style={styles.sectionTitle}>Recent Activity</Text>
-            <TouchableOpacity><Text style={styles.viewAllText}>View All</Text></TouchableOpacity>
+            <Pressable><Text style={styles.viewAllText}>View All</Text></Pressable>
           </View>
 
           <View style={styles.activityList}>
             {TRANSACTIONS.map((tx, idx) => (
-              <TouchableOpacity key={tx.id} style={styles.txCard}>
+              <Pressable key={tx.id} style={styles.txCard}>
                 {tx.type === 'escrow' && <View style={styles.txAccentBar} />}
                 
                 <View style={styles.txHeader}>
@@ -170,7 +170,7 @@ const WalletScreen = () => {
                     </View>
                   </View>
                 )}
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         </View>

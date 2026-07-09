@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 
@@ -53,7 +53,7 @@ const LoginScreen = ({ navigation }: any) => {
             <View style={styles.inputGroup}>
               <View style={styles.passwordLabelRow}>
                 <Text style={styles.label}>Password</Text>
-                <TouchableOpacity><Text style={styles.forgotText}>Forgot Password?</Text></TouchableOpacity>
+                <Pressable><Text style={styles.forgotText}>Forgot Password?</Text></Pressable>
               </View>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputIcon}>🔒</Text>
@@ -63,20 +63,20 @@ const LoginScreen = ({ navigation }: any) => {
                   placeholderTextColor={C.outline}
                   secureTextEntry
                 />
-                <TouchableOpacity style={styles.eyeIcon}><Text>👁️</Text></TouchableOpacity>
+                <Pressable style={styles.eyeIcon}><Text>👁️</Text></Pressable>
               </View>
             </View>
 
-            <TouchableOpacity style={styles.loginBtn} onPress={login}>
+            <Pressable style={styles.loginBtn} onPress={login}>
               <Text style={styles.loginBtnText}>Login</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>New to campus? </Text>
-            <TouchableOpacity onPress={() => navigation?.navigate('Register')}>
+            <Pressable onPress={() => navigation?.navigate('Register')}>
               <Text style={styles.signupText}>Sign up</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
         </ScrollView>

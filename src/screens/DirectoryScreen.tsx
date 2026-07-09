@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -57,13 +57,13 @@ const DirectoryScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => Alert.alert('Friend Requests', 'Sarah T. and 2 others want to connect with you.')}>
+        <Pressable style={styles.iconBtn} onPress={() => Alert.alert('Friend Requests', 'Sarah T. and 2 others want to connect with you.')}>
           <Text style={styles.iconTxt}>🔔</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+        <Pressable style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatar} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -83,24 +83,24 @@ const DirectoryScreen = () => {
           </View>
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.filterChip, activeFilter === 'All Students' && styles.filterChipActive]}
               onPress={() => setActiveFilter('All Students')}
             >
               <Text style={[styles.filterChipText, activeFilter === 'All Students' && styles.filterChipTextActive]}>All Students</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
+            </Pressable>
+            <Pressable 
               style={[styles.filterChip, activeFilter === 'Engineering' && styles.filterChipActive]}
               onPress={() => setActiveFilter('Engineering')}
             >
               <Text style={[styles.filterChipText, activeFilter === 'Engineering' && styles.filterChipTextActive]}>Engineering</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
+            </Pressable>
+            <Pressable 
               style={[styles.filterChip, activeFilter === 'Arts & Science' && styles.filterChipActive]}
               onPress={() => setActiveFilter('Arts & Science')}
             >
               <Text style={[styles.filterChipText, activeFilter === 'Arts & Science' && styles.filterChipTextActive]}>Arts & Science</Text>
-            </TouchableOpacity>
+            </Pressable>
           </ScrollView>
         </View>
 
@@ -123,7 +123,7 @@ const DirectoryScreen = () => {
                 </View>
               </View>
               
-              <TouchableOpacity 
+              <Pressable 
                 style={[
                   styles.actionBtn, 
                   student.action === 'Connect' ? styles.btnConnect : 
@@ -143,7 +143,7 @@ const DirectoryScreen = () => {
                    student.action === 'Request Sent' ? '✓ Request Sent' :
                    '💬 Message'}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )) : (
             <Text style={{ textAlign: 'center', marginTop: 32, color: C.outline }}>No students found matching your criteria.</Text>

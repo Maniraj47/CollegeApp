@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -21,13 +21,13 @@ const CreatePostScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Pressable onPress={() => navigation.goBack()}>
           <Text style={styles.headerBtn}>Cancel</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>New Post</Text>
-        <TouchableOpacity onPress={handlePost} style={styles.postBtn}>
+        <Pressable onPress={handlePost} style={styles.postBtn}>
           <Text style={styles.postBtnText}>Post</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView style={styles.content}>

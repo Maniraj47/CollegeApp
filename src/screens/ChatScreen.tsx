@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -65,12 +65,12 @@ const ChatScreen = () => {
       <View style={styles.header}>
         <View style={styles.iconBtn} />
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+        <Pressable style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image
             source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }}
             style={styles.profileAvatar}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <View style={styles.content}>
@@ -90,7 +90,7 @@ const ChatScreen = () => {
 
         <ScrollView contentContainerStyle={styles.chatList}>
           {filteredChats.map((chat) => (
-            <TouchableOpacity 
+            <Pressable 
               key={chat.id} 
               style={[styles.chatRow, chat.unread > 0 && styles.chatRowActive]}
               onPress={() => navigation.navigate('ChatDetail', { chat })}
@@ -134,7 +134,7 @@ const ChatScreen = () => {
                   <Text style={styles.unreadText}>{chat.unread}</Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </ScrollView>
       </View>

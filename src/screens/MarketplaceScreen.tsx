@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -81,9 +81,9 @@ const MarketplaceScreen = () => {
       <View style={styles.header}>
         <View style={styles.iconBtn} />
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+        <Pressable style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatar} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -106,20 +106,20 @@ const MarketplaceScreen = () => {
         {/* Categories */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesContainer}>
           {CATEGORIES.map((cat, i) => (
-            <TouchableOpacity 
+            <Pressable 
               key={cat} 
               style={[styles.categoryChip, activeCategory === cat && styles.activeChip]}
               onPress={() => setActiveCategory(cat)}
             >
               <Text style={[styles.categoryText, activeCategory === cat && styles.activeChipText]}>{cat}</Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </ScrollView>
 
         {/* Grid Items */}
         <View style={styles.grid}>
           {filteredItems.length > 0 ? filteredItems.map(item => (
-            <TouchableOpacity 
+            <Pressable 
               key={item.id} 
               style={styles.card}
               onPress={() => navigation.navigate('ProductDetail', { product: item })}
@@ -142,7 +142,7 @@ const MarketplaceScreen = () => {
                   </View>
                 </View>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )) : (
             <Text style={{ textAlign: 'center', width: '100%', marginTop: 32, color: C.outline }}>No items found matching your criteria.</Text>
           )}

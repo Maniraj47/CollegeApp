@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
 const C = {
@@ -43,9 +44,9 @@ const ChatDetailScreen = ({ route }: any) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={styles.iconTxt}>←</Text>
-          </TouchableOpacity>
+          </Pressable>
           
           <View style={styles.headerProfile}>
             <View style={styles.avatarContainer}>
@@ -62,9 +63,9 @@ const ChatDetailScreen = ({ route }: any) => {
           </View>
           
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('Profile')}>
+            <Pressable style={styles.actionBtn} onPress={() => navigation.navigate('Profile')}>
               <View style={styles.infoIcon}><Text style={styles.infoIconTxt}>i</Text></View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
@@ -100,9 +101,9 @@ const ChatDetailScreen = ({ route }: any) => {
 
         {/* Input Area */}
         <View style={styles.inputArea}>
-          <TouchableOpacity style={styles.attachBtn}>
+          <Pressable style={styles.attachBtn}>
             <Text style={styles.attachBtnTxt}>+</Text>
-          </TouchableOpacity>
+          </Pressable>
           
           <View style={styles.inputContainer}>
             <TextInput 
@@ -113,12 +114,12 @@ const ChatDetailScreen = ({ route }: any) => {
               value={inputText}
               onChangeText={setInputText}
             />
-            <TouchableOpacity style={styles.emojiBtn}>
+            <Pressable style={styles.emojiBtn}>
               <Text style={styles.emojiTxt}>😊</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           
-          <TouchableOpacity 
+          <Pressable 
             style={styles.sendBtn} 
             onPress={() => {
               if (inputText.trim()) {
@@ -128,7 +129,7 @@ const ChatDetailScreen = ({ route }: any) => {
             }}
           >
             <Text style={styles.sendBtnTxt}>➤</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
       </KeyboardAvoidingView>

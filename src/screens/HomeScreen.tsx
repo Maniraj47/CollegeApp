@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -141,16 +141,16 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn} onPress={handleFAB}>
+        <Pressable style={styles.iconBtn} onPress={handleFAB}>
           <Text style={styles.iconTxt}>➕</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+        <Pressable style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image
             source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }}
             style={styles.profileAvatar}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -169,22 +169,22 @@ const HomeScreen = () => {
                   <Text style={styles.timeLocation}>{post.time} • {post.location}</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => handleMoreOptions(post.id)}><Text style={styles.moreIcon}>•••</Text></TouchableOpacity>
+              <Pressable onPress={() => handleMoreOptions(post.id)}><Text style={styles.moreIcon}>•••</Text></Pressable>
             </View>
             <Text style={styles.postText}>{post.text}</Text>
             {post.image && <Image source={{ uri: post.image }} style={styles.postImage} />}
             <View style={styles.actions}>
-              <TouchableOpacity style={styles.actionChip} onPress={() => handleLike(post.id)}>
+              <Pressable style={styles.actionChip} onPress={() => handleLike(post.id)}>
                 <Text style={styles.actionIcon}>❤️</Text>
                 <Text style={styles.actionNumber}>{post.likes}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionChip} onPress={() => handleComment(post.id)}>
+              </Pressable>
+              <Pressable style={styles.actionChip} onPress={() => handleComment(post.id)}>
                 <Text style={styles.actionIcon}>💬</Text>
                 <Text style={styles.actionNumber}>{post.comments}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.actionChip, { marginLeft: 'auto' }]} onPress={handleShare}>
+              </Pressable>
+              <Pressable style={[styles.actionChip, { marginLeft: 'auto' }]} onPress={handleShare}>
                 <Text style={styles.actionIcon}>↗️</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         ))}
@@ -202,40 +202,40 @@ const HomeScreen = () => {
                 <Text style={styles.timeLocation}>{INITIAL_POLL.time} • {INITIAL_POLL.location}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => handleMoreOptions(INITIAL_POLL.id)}><Text style={styles.moreIcon}>•••</Text></TouchableOpacity>
+            <Pressable onPress={() => handleMoreOptions(INITIAL_POLL.id)}><Text style={styles.moreIcon}>•••</Text></Pressable>
           </View>
           <Text style={[styles.postText, { fontWeight: '600' }]}>{INITIAL_POLL.text}</Text>
           
           <View style={styles.pollContainer}>
             {poll.map((opt, i) => (
-              <TouchableOpacity 
+              <Pressable 
                 key={i} 
-                style={styles.pollOption} 
+                style={({ pressed }) => [styles.pollOption, pressed && !hasVoted && { opacity: 0.7 }]} 
                 onPress={() => handleVote(i)}
-                activeOpacity={hasVoted ? 1 : 0.7}
+                disabled={hasVoted}
               >
                 <View style={[styles.pollFill, { width: `${opt.percent}%`, backgroundColor: opt.active ? 'rgba(0,62,199,0.1)' : C.surfaceContainer }]} />
                 <View style={styles.pollContent}>
                   <Text style={styles.pollLabel}>{opt.label}</Text>
                   <Text style={[styles.pollPercent, opt.active && { color: C.primary, fontWeight: '700' }]}>{opt.percent}%</Text>
                 </View>
-              </TouchableOpacity>
+              </Pressable>
             ))}
             <Text style={styles.pollFooter}>{pollVotes} votes • 2 hours left</Text>
           </View>
 
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.actionChip} onPress={() => handleLike(INITIAL_POLL.id, true)}>
+            <Pressable style={styles.actionChip} onPress={() => handleLike(INITIAL_POLL.id, true)}>
               <Text style={styles.actionIcon}>❤️</Text>
               <Text style={styles.actionNumber}>{pollLikes}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionChip} onPress={() => handleComment(INITIAL_POLL.id)}>
+            </Pressable>
+            <Pressable style={styles.actionChip} onPress={() => handleComment(INITIAL_POLL.id)}>
               <Text style={styles.actionIcon}>💬</Text>
               <Text style={styles.actionNumber}>{pollCommentCount}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionChip, { marginLeft: 'auto' }]} onPress={handleShare}>
+            </Pressable>
+            <Pressable style={[styles.actionChip, { marginLeft: 'auto' }]} onPress={handleShare}>
               <Text style={styles.actionIcon}>↗️</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
         
@@ -254,9 +254,9 @@ const HomeScreen = () => {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Comments</Text>
-              <TouchableOpacity onPress={() => setIsCommentsVisible(false)}>
+              <Pressable onPress={() => setIsCommentsVisible(false)}>
                 <Text style={styles.closeBtn}>Close</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
             <ScrollView style={styles.commentsList}>
               {(currentPostId && postComments[currentPostId]) ? (
@@ -277,9 +277,9 @@ const HomeScreen = () => {
                 value={newCommentText}
                 onChangeText={setNewCommentText}
               />
-              <TouchableOpacity onPress={submitComment} style={styles.submitCommentBtn}>
+              <Pressable onPress={submitComment} style={styles.submitCommentBtn}>
                 <Text style={styles.submitCommentTxt}>Post</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -292,28 +292,28 @@ const HomeScreen = () => {
         transparent={true}
         onRequestClose={() => setIsOptionsVisible(false)}
       >
-        <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPressOut={() => setIsOptionsVisible(false)}>
+        <Pressable style={styles.modalContainer} onPress={() => setIsOptionsVisible(false)}>
           <View style={styles.optionsContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Post Options</Text>
             </View>
-            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Saved', 'Post saved to your bookmarks.'); setIsOptionsVisible(false); }}>
+            <Pressable style={styles.optionItem} onPress={() => { Alert.alert('Saved', 'Post saved to your bookmarks.'); setIsOptionsVisible(false); }}>
               <Text style={styles.optionText}>🔖 Save Post</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Copied', 'Link copied to clipboard.'); setIsOptionsVisible(false); }}>
+            </Pressable>
+            <Pressable style={styles.optionItem} onPress={() => { Alert.alert('Copied', 'Link copied to clipboard.'); setIsOptionsVisible(false); }}>
               <Text style={styles.optionText}>🔗 Copy Link</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Not Interested', 'We will show fewer posts like this.'); setIsOptionsVisible(false); }}>
+            </Pressable>
+            <Pressable style={styles.optionItem} onPress={() => { Alert.alert('Not Interested', 'We will show fewer posts like this.'); setIsOptionsVisible(false); }}>
               <Text style={styles.optionText}>🚫 Not interested</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Reported', 'Thank you for reporting this post.'); setIsOptionsVisible(false); }}>
+            </Pressable>
+            <Pressable style={styles.optionItem} onPress={() => { Alert.alert('Reported', 'Thank you for reporting this post.'); setIsOptionsVisible(false); }}>
               <Text style={[styles.optionText, { color: '#d93025' }]}>🚩 Report</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelOptionBtn} onPress={() => setIsOptionsVisible(false)}>
+            </Pressable>
+            <Pressable style={styles.cancelOptionBtn} onPress={() => setIsOptionsVisible(false)}>
               <Text style={styles.cancelOptionTxt}>Cancel</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );

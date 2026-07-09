@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, SafeAreaView, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Switch, Alert, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../hooks/useAuth';
 
@@ -26,13 +27,13 @@ const SettingsScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}>
+        <Pressable style={styles.iconBtn}>
           <Text style={styles.menuIcon}>≡</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>CollegeHub</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <Pressable onPress={() => navigation.navigate('Profile')}>
           <Image source={{ uri: COMMON_AVATAR }} style={styles.profileAvatar} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -42,21 +43,21 @@ const SettingsScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           <View style={styles.card}>
-            <TouchableOpacity style={styles.row} onPress={() => Alert.prompt('Change Username', 'Enter your new username:')}>
+            <Pressable style={styles.row} onPress={() => Alert.prompt('Change Username', 'Enter your new username:')}>
               <View style={styles.rowLeft}>
                 <Text style={styles.icon}>👤</Text>
                 <Text style={styles.rowText}>Change Username</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
+            </Pressable>
             <View style={styles.divider} />
-            <TouchableOpacity style={styles.row} onPress={() => Alert.prompt('Change Password', 'Enter your new password:')}>
+            <Pressable style={styles.row} onPress={() => Alert.prompt('Change Password', 'Enter your new password:')}>
               <View style={styles.rowLeft}>
                 <Text style={styles.icon}>🔒</Text>
                 <Text style={styles.rowText}>Change Password</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
@@ -77,13 +78,13 @@ const SettingsScreen = () => {
               />
             </View>
             <View style={styles.divider} />
-            <TouchableOpacity style={styles.row} onPress={() => Alert.alert('Notification Preferences', 'Choose how you want to be notified.')}>
+            <Pressable style={styles.row} onPress={() => Alert.alert('Notification Preferences', 'Choose how you want to be notified.')}>
               <View style={styles.rowLeft}>
                 <Text style={styles.icon}>🔔</Text>
                 <Text style={styles.rowText}>Notification Preferences</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
@@ -91,18 +92,18 @@ const SettingsScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Privacy</Text>
           <View style={styles.card}>
-            <TouchableOpacity style={styles.row} onPress={() => Alert.alert('Privacy Settings', 'Manage your privacy and security.')}>
+            <Pressable style={styles.row} onPress={() => Alert.alert('Privacy Settings', 'Manage your privacy and security.')}>
               <View style={styles.rowLeft}>
                 <Text style={styles.icon}>🛡️</Text>
                 <Text style={styles.rowText}>Privacy Settings</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutCard} onPress={() => {
+        <Pressable style={styles.logoutCard} onPress={() => {
           Alert.alert('Logged Out', 'You have successfully logged out.');
           logout();
         }}>
@@ -110,7 +111,7 @@ const SettingsScreen = () => {
             <Text style={styles.logoutIcon}>🚪</Text>
             <Text style={styles.logoutText}>Logout</Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
 
       </ScrollView>
     </SafeAreaView>

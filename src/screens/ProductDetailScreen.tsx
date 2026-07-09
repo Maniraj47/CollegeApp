@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, Dimensions, Share, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Dimensions, Share, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
@@ -42,16 +43,16 @@ const ProductDetailScreen = ({ route }: any) => {
           {/* Top Actions */}
           <SafeAreaView style={styles.topActionsSafeArea}>
             <View style={styles.topActions}>
-              <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}>
+              <Pressable style={styles.iconButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.iconText}>←</Text>
-              </TouchableOpacity>
+              </Pressable>
               <View style={styles.topRightActions}>
-                <TouchableOpacity style={styles.iconButton} onPress={() => setIsLiked(!isLiked)}>
+                <Pressable style={styles.iconButton} onPress={() => setIsLiked(!isLiked)}>
                   <Text style={styles.iconText}>{isLiked ? '❤️' : '🤍'}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={() => Share.share({ message: `Check out ${product.title} on Campus Exchange!` })}>
+                </Pressable>
+                <Pressable style={styles.iconButton} onPress={() => Share.share({ message: `Check out ${product.title} on Campus Exchange!` })}>
                   <Text style={styles.iconText}>🔗</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           </SafeAreaView>
@@ -86,7 +87,7 @@ const ProductDetailScreen = ({ route }: any) => {
           <Text style={styles.subtitle}>ISBN: 978-1305080485 • Author: John McMurry</Text>
 
           {/* Seller */}
-          <TouchableOpacity style={styles.sellerCard} onPress={() => navigation.navigate('Profile')}>
+          <Pressable style={styles.sellerCard} onPress={() => navigation.navigate('Profile')}>
             <Image source={{ uri: product.sellerAvatar }} style={styles.sellerAvatar} />
             <View style={styles.sellerInfo}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -96,7 +97,7 @@ const ProductDetailScreen = ({ route }: any) => {
               <Text style={styles.sellerStats}>⭐ 4.9 (24 trusted trades)</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Escrow Box */}
           <View style={styles.escrowBox}>
@@ -179,12 +180,12 @@ const ProductDetailScreen = ({ route }: any) => {
 
       {/* Sticky Bottom Actions */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.messageBtn} onPress={() => navigation.navigate('ChatDetail', { chat: { name: product.seller } })}>
+        <Pressable style={styles.messageBtn} onPress={() => navigation.navigate('ChatDetail', { chat: { name: product.seller } })}>
           <Text style={styles.messageBtnText}>💬 Message</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buyBtn} onPress={() => Alert.alert('Purchase Started', 'Setting up secure escrow for this transaction...')}>
+        </Pressable>
+        <Pressable style={styles.buyBtn} onPress={() => Alert.alert('Purchase Started', 'Setting up secure escrow for this transaction...')}>
           <Text style={styles.buyBtnText}>Buy Now ➔</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
