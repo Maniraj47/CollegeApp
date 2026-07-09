@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const C = {
   background: '#f7f9fb',
@@ -18,14 +19,17 @@ const C = {
 };
 
 const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
+  const navigation = useNavigation<any>();
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}><Text style={styles.iconTxt}>⚙️</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.goBack()}>
+          <Text style={styles.iconTxt}>←</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtnSmall}>
-          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBtj90Jg6V5CBvp3HVT4domW5VsKCEPoff1nIja2SjBoQuyQhDT1AxNxNGD6-xP6HaplHbS8pVQI19gZdMuPZ93q9Ts1lrTpMa7bqT6pvobHiExb_qm9VMceEcmAhrJBtV9WuapN4kDrVuehytoRds3GUFqtvjsHpdord3NtuX3cg__F6p1O_MMgS8BM6wxsH_OUILS0VMXzQPK6fBtGyV1W0_HHSiL74NTzYdpknbAdMLs5RxmrA5HVru7vfAKIFy3hmU3MPQA_0A' }} style={styles.profileAvatarSmall} />
+        <TouchableOpacity style={styles.profileBtn}>
+          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatarSmall} />
         </TouchableOpacity>
       </View>
 
@@ -95,7 +99,7 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
             </TouchableOpacity>
             
             {/* Settings */}
-            <TouchableOpacity style={styles.settingsCard}>
+            <TouchableOpacity style={styles.settingsCard} onPress={() => navigation.navigate('Settings')}>
               <Text style={styles.settingsIcon}>⚙️</Text>
               <View>
                 <Text style={styles.settingsTitle}>Preferences</Text>

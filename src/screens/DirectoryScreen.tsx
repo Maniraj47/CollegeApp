@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const C = {
   background: '#f7f9fb',
@@ -16,7 +17,7 @@ const C = {
   outlineVariant: '#c3c5d9',
 };
 
-const STUDENTS = [
+const INITIAL_STUDENTS = [
   { id: '1', name: 'Sarah Jenkins', major: 'Computer Science', studentId: '2024-001248', verified: true, action: 'Connect' },
   { id: '2', name: 'Marcus Torres', major: 'Business Administration', studentId: '2021-008932', verified: true, action: 'Message' },
   { id: '3', name: 'Aisha Patel', major: 'Graphic Design', studentId: '2023-004451', verified: true, action: 'Connect' },
@@ -24,12 +25,43 @@ const STUDENTS = [
 ];
 
 const DirectoryScreen = () => {
+  const navigation = useNavigation<any>();
+  const [students, setStudents] = useState(INITIAL_STUDENTS);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('All Students');
+
+  const handleAction = (id: string, action: string) => {
+    if (action === 'Connect') {
+      setStudents(prev => prev.map(s => s.id === id ? { ...s, action: 'Request Sent' } : s));
+    } else if (action === 'Message') {
+      const student = students.find(s => s.id === id);
+      navigation.navigate('ChatDetail', { chat: { name: student?.name || 'Student' } });
+    }
+  };
+
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = 
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      student.major.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      student.studentId.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    let matchesFilter = true;
+    if (activeFilter === 'Engineering') {
+      matchesFilter = ['Computer Science', 'Mechanical Engineering'].includes(student.major);
+    } else if (activeFilter === 'Arts & Science') {
+      matchesFilter = ['Graphic Design', 'Business Administration'].includes(student.major);
+    }
+    
+    return matchesSearch && matchesFilter;
+  });
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}><Text style={styles.iconTxt}>🔍</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => Alert.alert('Friend Requests', 'Sarah T. and 2 others want to connect with you.')}>
+          <Text style={styles.iconTxt}>🔔</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn}>
+        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatar} />
         </TouchableOpacity>
       </View>
@@ -45,24 +77,35 @@ const DirectoryScreen = () => {
               style={styles.searchInput}
               placeholder="Search by name, major or ID..."
               placeholderTextColor={C.outline}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
           </View>
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-            <TouchableOpacity style={[styles.filterChip, styles.filterChipActive]}>
-              <Text style={[styles.filterChipText, styles.filterChipTextActive]}>All Students</Text>
+            <TouchableOpacity 
+              style={[styles.filterChip, activeFilter === 'All Students' && styles.filterChipActive]}
+              onPress={() => setActiveFilter('All Students')}
+            >
+              <Text style={[styles.filterChipText, activeFilter === 'All Students' && styles.filterChipTextActive]}>All Students</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.filterChip}>
-              <Text style={styles.filterChipText}>Engineering</Text>
+            <TouchableOpacity 
+              style={[styles.filterChip, activeFilter === 'Engineering' && styles.filterChipActive]}
+              onPress={() => setActiveFilter('Engineering')}
+            >
+              <Text style={[styles.filterChipText, activeFilter === 'Engineering' && styles.filterChipTextActive]}>Engineering</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.filterChip}>
-              <Text style={styles.filterChipText}>Arts & Science</Text>
+            <TouchableOpacity 
+              style={[styles.filterChip, activeFilter === 'Arts & Science' && styles.filterChipActive]}
+              onPress={() => setActiveFilter('Arts & Science')}
+            >
+              <Text style={[styles.filterChipText, activeFilter === 'Arts & Science' && styles.filterChipTextActive]}>Arts & Science</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
 
         <View style={styles.grid}>
-          {STUDENTS.map(student => (
+          {filteredStudents.length > 0 ? filteredStudents.map(student => (
             <View key={student.id} style={styles.card}>
               <View style={styles.cardTop}>
                 <Text style={styles.studentName}>{student.name}</Text>
@@ -80,13 +123,31 @@ const DirectoryScreen = () => {
                 </View>
               </View>
               
-              <TouchableOpacity style={[styles.actionBtn, student.action === 'Connect' ? styles.btnConnect : styles.btnMessage]}>
-                <Text style={[styles.actionBtnText, student.action === 'Connect' ? styles.btnConnectText : styles.btnMessageText]}>
-                  {student.action === 'Connect' ? '➕ Connect' : '💬 Message'}
+              <TouchableOpacity 
+                style={[
+                  styles.actionBtn, 
+                  student.action === 'Connect' ? styles.btnConnect : 
+                  student.action === 'Request Sent' ? styles.btnRequestSent : 
+                  styles.btnMessage
+                ]}
+                onPress={() => handleAction(student.id, student.action)}
+                disabled={student.action === 'Request Sent'}
+              >
+                <Text style={[
+                  styles.actionBtnText, 
+                  student.action === 'Connect' ? styles.btnConnectText : 
+                  student.action === 'Request Sent' ? styles.btnRequestSentText :
+                  styles.btnMessageText
+                ]}>
+                  {student.action === 'Connect' ? '➕ Connect' : 
+                   student.action === 'Request Sent' ? '✓ Request Sent' :
+                   '💬 Message'}
                 </Text>
               </TouchableOpacity>
             </View>
-          ))}
+          )) : (
+            <Text style={{ textAlign: 'center', marginTop: 32, color: C.outline }}>No students found matching your criteria.</Text>
+          )}
         </View>
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -144,6 +205,8 @@ const styles = StyleSheet.create({
   actionBtn: { paddingVertical: 12, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'transparent' },
   btnConnect: { backgroundColor: C.primaryContainer },
   btnConnectText: { color: C.onPrimaryContainer, fontSize: 16, fontWeight: '600' },
+  btnRequestSent: { backgroundColor: C.surfaceContainer, borderColor: C.outlineVariant },
+  btnRequestSentText: { color: C.outline, fontSize: 16, fontWeight: '600' },
   btnMessage: { backgroundColor: C.surfaceLowest, borderColor: C.outlineVariant },
   btnMessageText: { color: C.onSurface, fontSize: 16, fontWeight: '600' },
 });

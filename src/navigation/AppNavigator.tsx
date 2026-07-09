@@ -1,8 +1,12 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 // ─── Screen imports (create these files in src/screens/) ───────────────────
 import LoginScreen from '../screens/LoginScreen';
@@ -12,7 +16,10 @@ import MarketplaceScreen from '../screens/MarketplaceScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import DirectoryScreen from '../screens/DirectoryScreen';
-import WalletScreen from '../screens/WalletScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
+import ChatDetailScreen from '../screens/ChatDetailScreen';
+import CreatePostScreen from '../screens/CreatePostScreen';
 
 // ─── Hook (create this in src/hooks/useAuth.ts) ────────────────────────────
 import { useAuth } from '../hooks/useAuth';
@@ -28,7 +35,14 @@ export const ROUTES = {
   DIRECTORY: 'Directory',
   MARKETPLACE: 'Marketplace',
   CHAT: 'Chat',
-  WALLET: 'Wallet',
+  SETTINGS: 'Settings',
+  
+  // Main stack
+  MAIN_TABS: 'MainTabs',
+  PROFILE: 'Profile',
+  PRODUCT_DETAIL: 'ProductDetail',
+  CHAT_DETAIL: 'ChatDetail',
+  CREATE_POST: 'CreatePost',
 } as const;
 
 // ─── TypeScript route param types ─────────────────────────────────────────
@@ -42,55 +56,127 @@ export type MainTabParamList = {
   Directory: undefined;
   Marketplace: undefined;
   Chat: undefined;
-  Wallet: undefined;
+  Settings: undefined;
+};
+
+export type MainStackParamList = {
+  MainTabs: undefined;
+  Profile: undefined;
+  ProductDetail: { product: any };
+  ChatDetail: { chat: any };
+  CreatePost: undefined;
 };
 
 // ─── Stack + Tab navigator instances ──────────────────────────────────────
 const AuthStack = createStackNavigator<AuthStackParamList>();
+const MainStack = createStackNavigator<MainStackParamList>();
 const MainTab = createBottomTabNavigator<MainTabParamList>();
 
-// ─── Tab bar icon (uses text icon — swap with react-native-vector-icons) ──
-const TabIcon = ({
-  label,
-  focused,
-}: {
-  label: string;
-  focused: boolean;
-}) => {
-  const icons: Record<string, string> = {
-    Home: '🏠',
-    Directory: '👥',
-    Marketplace: '🛍️',
-    Chat: '💬',
-    Wallet: '💳',
-  };
+// ─── Custom Tab Bar ────────────────────────────────────────────────────────
+const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   return (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.4 }}>
-      {icons[label] ?? '•'}
-    </Text>
+    <View style={styles.tabBar}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        const icons: Record<string, string> = {
+          Home: '🏠',
+          Directory: '👥',
+          Marketplace: '🛍️',
+          Chat: '💬',
+          Settings: '⚙️',
+        };
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            onPress={onPress}
+            activeOpacity={0.8}
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: isFocused ? '#111111' : 'transparent',
+              padding: isFocused ? 6 : 0,
+              paddingRight: isFocused ? 16 : 0,
+              borderRadius: 30,
+            }}>
+              <View style={{
+                backgroundColor: isFocused ? '#0052FF' : '#F5F5F5',
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <Text style={{ fontSize: 20, opacity: isFocused ? 1 : 0.6 }}>
+                  {icons[route.name] ?? '•'}
+                </Text>
+              </View>
+              {isFocused && (
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    marginLeft: 8,
+                    color: '#FFFFFF',
+                    fontWeight: '600',
+                    fontSize: 14,
+                  }}
+                >
+                  {route.name}
+                </Text>
+              )}
+            </View>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 };
 
 // ─── Bottom tab navigator (shown when logged in) ───────────────────────────
 const MainTabNavigator = () => (
   <MainTab.Navigator
-    screenOptions={({ route }) => ({
+    tabBar={(props) => <CustomTabBar {...props} />}
+    screenOptions={{
       headerShown: false,
-      tabBarShowLabel: false,
-      tabBarStyle: styles.tabBar,
-      tabBarActiveTintColor: '#0052FF',
-      tabBarInactiveTintColor: '#9E9E9E',
-      tabBarIcon: ({ focused }) => (
-        <TabIcon label={route.name} focused={focused} />
-      ),
-    })}
+    }}
   >
     <MainTab.Screen name={ROUTES.HOME} component={HomeScreen} />
     <MainTab.Screen name={ROUTES.DIRECTORY} component={DirectoryScreen} />
     <MainTab.Screen name={ROUTES.MARKETPLACE} component={MarketplaceScreen} />
     <MainTab.Screen name={ROUTES.CHAT} component={ChatScreen} />
-    <MainTab.Screen name={ROUTES.WALLET} component={WalletScreen} />
+    <MainTab.Screen name={ROUTES.SETTINGS} component={SettingsScreen} />
   </MainTab.Navigator>
+);
+
+// ─── Main Stack Navigator (wraps tabs and detail screens) ──────────────────
+const MainStackNavigator = () => (
+  <MainStack.Navigator screenOptions={{ headerShown: false }}>
+    <MainStack.Screen name={ROUTES.MAIN_TABS as any} component={MainTabNavigator} />
+    <MainStack.Screen name={ROUTES.PROFILE as any} component={ProfileScreen} />
+    <MainStack.Screen name={ROUTES.PRODUCT_DETAIL as any} component={ProductDetailScreen} />
+    <MainStack.Screen name={ROUTES.CHAT_DETAIL as any} component={ChatDetailScreen} />
+    <MainStack.Screen name={ROUTES.CREATE_POST as any} component={CreatePostScreen} />
+  </MainStack.Navigator>
 );
 
 // ─── Auth stack navigator (shown when logged out) ─────────────────────────
@@ -134,7 +220,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      {user ? <MainTabNavigator /> : <AuthNavigator />}
+      {user ? <MainStackNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };
@@ -142,14 +228,22 @@ const AppNavigator = () => {
 // ─── Styles ────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 0.5,
-    borderTopColor: '#E0E0E0',
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    right: 20,
     height: 70,
-    paddingBottom: 20,
-    paddingTop: 8,
-    elevation: 0,
-    shadowOpacity: 0,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 35,
+    paddingHorizontal: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
   },
   loadingContainer: {
     flex: 1,

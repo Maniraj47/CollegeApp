@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const C = {
   background: '#f7f9fb',
@@ -48,9 +49,28 @@ const INITIAL_POLL = {
 };
 
 const HomeScreen = () => {
+  const navigation = useNavigation<any>();
   const [poll, setPoll] = useState(INITIAL_POLL.poll);
   const [pollVotes, setPollVotes] = useState(INITIAL_POLL.votes);
   const [hasVoted, setHasVoted] = useState(false);
+  
+  const [posts, setPosts] = useState(POSTS);
+  const [pollLikes, setPollLikes] = useState(INITIAL_POLL.likes);
+  const [pollCommentCount, setPollCommentCount] = useState(INITIAL_POLL.comments);
+
+  // Comments modal state
+  const [isCommentsVisible, setIsCommentsVisible] = useState(false);
+  const [currentPostId, setCurrentPostId] = useState<string | null>(null);
+  
+  // Options modal state
+  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+
+  const [newCommentText, setNewCommentText] = useState('');
+  const [postComments, setPostComments] = useState<{ [key: string]: { id: string, text: string, user: string }[] }>({
+    '1': [{ id: 'c1', text: 'Tailgating at Lot B sounds great!', user: 'David' }, { id: 'c2', text: 'See you there', user: 'Alex' }],
+    '2': [{ id: 'c3', text: 'Library is packed rn', user: 'Charlie' }]
+  });
 
   const handleVote = (index: number) => {
     if (hasVoted) return; // Prevent multiple votes
@@ -68,9 +88,54 @@ const HomeScreen = () => {
     Alert.alert('Vote Cast', `You voted for: ${poll[index].label}`);
   };
 
+  const handleLike = (id: string, isPoll: boolean = false) => {
+    if (isPoll) {
+       setPollLikes(prev => prev + 1);
+    } else {
+       setPosts(posts.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p));
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: 'Check out this post on College Hub!',
+      });
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  };
+
+  const handleComment = (id: string) => {
+    setCurrentPostId(id);
+    setIsCommentsVisible(true);
+  };
+
+  const submitComment = () => {
+    if (!newCommentText.trim() || !currentPostId) return;
+    const newComment = { id: Date.now().toString(), text: newCommentText, user: 'Me' };
+    setPostComments({
+      ...postComments,
+      [currentPostId]: [...(postComments[currentPostId] || []), newComment]
+    });
+    
+    if (currentPostId === INITIAL_POLL.id) {
+       setPollCommentCount(prev => prev + 1);
+    } else {
+       setPosts(posts.map(p => p.id === currentPostId ? { ...p, comments: p.comments + 1 } : p));
+    }
+    
+    setNewCommentText('');
+  };
+
   const handleNotification = () => Alert.alert('Notifications', 'You have no new notifications right now.');
   const handleSearch = () => Alert.alert('Search', 'Search feature coming soon!');
-  const handleFAB = () => Alert.alert('Create Post', 'What\'s on your mind?');
+  const handleFAB = () => navigation.navigate('CreatePost');
+
+  const handleMoreOptions = (id: string) => {
+    setSelectedPostId(id);
+    setIsOptionsVisible(true);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -80,7 +145,7 @@ const HomeScreen = () => {
           <Text style={styles.iconTxt}>➕</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn}>
+        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image
             source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }}
             style={styles.profileAvatar}
@@ -91,7 +156,7 @@ const HomeScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
         {/* Post 1: Image */}
-        {POSTS.map(post => (
+        {posts.map(post => (
           <View key={post.id} style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={styles.cardUser}>
@@ -104,20 +169,20 @@ const HomeScreen = () => {
                   <Text style={styles.timeLocation}>{post.time} • {post.location}</Text>
                 </View>
               </View>
-              <TouchableOpacity><Text style={styles.moreIcon}>•••</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => handleMoreOptions(post.id)}><Text style={styles.moreIcon}>•••</Text></TouchableOpacity>
             </View>
             <Text style={styles.postText}>{post.text}</Text>
             {post.image && <Image source={{ uri: post.image }} style={styles.postImage} />}
             <View style={styles.actions}>
-              <TouchableOpacity style={styles.actionChip}>
+              <TouchableOpacity style={styles.actionChip} onPress={() => handleLike(post.id)}>
                 <Text style={styles.actionIcon}>❤️</Text>
                 <Text style={styles.actionNumber}>{post.likes}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionChip}>
+              <TouchableOpacity style={styles.actionChip} onPress={() => handleComment(post.id)}>
                 <Text style={styles.actionIcon}>💬</Text>
                 <Text style={styles.actionNumber}>{post.comments}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.actionChip, { marginLeft: 'auto' }]}>
+              <TouchableOpacity style={[styles.actionChip, { marginLeft: 'auto' }]} onPress={handleShare}>
                 <Text style={styles.actionIcon}>↗️</Text>
               </TouchableOpacity>
             </View>
@@ -137,7 +202,7 @@ const HomeScreen = () => {
                 <Text style={styles.timeLocation}>{INITIAL_POLL.time} • {INITIAL_POLL.location}</Text>
               </View>
             </View>
-            <TouchableOpacity><Text style={styles.moreIcon}>•••</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMoreOptions(INITIAL_POLL.id)}><Text style={styles.moreIcon}>•••</Text></TouchableOpacity>
           </View>
           <Text style={[styles.postText, { fontWeight: '600' }]}>{INITIAL_POLL.text}</Text>
           
@@ -160,13 +225,16 @@ const HomeScreen = () => {
           </View>
 
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.actionChip}>
+            <TouchableOpacity style={styles.actionChip} onPress={() => handleLike(INITIAL_POLL.id, true)}>
               <Text style={styles.actionIcon}>❤️</Text>
-              <Text style={styles.actionNumber}>{INITIAL_POLL.likes}</Text>
+              <Text style={styles.actionNumber}>{pollLikes}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionChip}>
+            <TouchableOpacity style={styles.actionChip} onPress={() => handleComment(INITIAL_POLL.id)}>
               <Text style={styles.actionIcon}>💬</Text>
-              <Text style={styles.actionNumber}>{INITIAL_POLL.comments}</Text>
+              <Text style={styles.actionNumber}>{pollCommentCount}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.actionChip, { marginLeft: 'auto' }]} onPress={handleShare}>
+              <Text style={styles.actionIcon}>↗️</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -174,6 +242,79 @@ const HomeScreen = () => {
         {/* Spacer for bottom nav */}
         <View style={{ height: 20 }} />
       </ScrollView>
+
+      {/* Comments Modal */}
+      <Modal
+        visible={isCommentsVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsCommentsVisible(false)}
+      >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Comments</Text>
+              <TouchableOpacity onPress={() => setIsCommentsVisible(false)}>
+                <Text style={styles.closeBtn}>Close</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.commentsList}>
+              {(currentPostId && postComments[currentPostId]) ? (
+                postComments[currentPostId].map(comment => (
+                  <View key={comment.id} style={styles.commentItem}>
+                    <Text style={styles.commentUser}>{comment.user}</Text>
+                    <Text style={styles.commentText}>{comment.text}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noCommentsTxt}>No comments yet. Be the first!</Text>
+              )}
+            </ScrollView>
+            <View style={styles.commentInputContainer}>
+              <TextInput
+                style={styles.commentInput}
+                placeholder="Write a comment..."
+                value={newCommentText}
+                onChangeText={setNewCommentText}
+              />
+              <TouchableOpacity onPress={submitComment} style={styles.submitCommentBtn}>
+                <Text style={styles.submitCommentTxt}>Post</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Post Options Modal */}
+      <Modal
+        visible={isOptionsVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsOptionsVisible(false)}
+      >
+        <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPressOut={() => setIsOptionsVisible(false)}>
+          <View style={styles.optionsContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Post Options</Text>
+            </View>
+            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Saved', 'Post saved to your bookmarks.'); setIsOptionsVisible(false); }}>
+              <Text style={styles.optionText}>🔖 Save Post</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Copied', 'Link copied to clipboard.'); setIsOptionsVisible(false); }}>
+              <Text style={styles.optionText}>🔗 Copy Link</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Not Interested', 'We will show fewer posts like this.'); setIsOptionsVisible(false); }}>
+              <Text style={styles.optionText}>🚫 Not interested</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionItem} onPress={() => { Alert.alert('Reported', 'Thank you for reporting this post.'); setIsOptionsVisible(false); }}>
+              <Text style={[styles.optionText, { color: '#d93025' }]}>🚩 Report</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelOptionBtn} onPress={() => setIsOptionsVisible(false)}>
+              <Text style={styles.cancelOptionTxt}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -232,6 +373,28 @@ const styles = StyleSheet.create({
   pollLabel: { fontSize: 14, fontWeight: '600', color: C.onSurface, zIndex: 10 },
   pollPercent: { fontSize: 14, color: C.onSurfaceVariant, zIndex: 10 },
   pollFooter: { fontSize: 12, color: C.outline, marginTop: 4 },
+  
+  // Modal styles
+  modalContainer: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
+  modalContent: { backgroundColor: C.surfaceLowest, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 16, maxHeight: '80%', minHeight: '50%' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 16, borderBottomWidth: 0.5, borderBottomColor: '#e5e7eb' },
+  modalTitle: { fontSize: 18, fontWeight: '700', color: C.onSurface },
+  closeBtn: { fontSize: 16, color: C.primary },
+  commentsList: { marginTop: 16, flex: 1 },
+  commentItem: { marginBottom: 12 },
+  commentUser: { fontSize: 14, fontWeight: '600', color: C.onSurface },
+  commentText: { fontSize: 14, color: C.onSurfaceVariant, marginTop: 4 },
+  noCommentsTxt: { textAlign: 'center', color: C.outline, marginTop: 32 },
+  commentInputContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 16, borderTopWidth: 0.5, borderTopColor: '#e5e7eb', paddingTop: 16 },
+  commentInput: { flex: 1, backgroundColor: C.surfaceContainer, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 14, color: C.onSurface },
+  submitCommentBtn: { marginLeft: 12, backgroundColor: C.primary, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16 },
+  submitCommentTxt: { color: 'white', fontWeight: '600' },
+  
+  optionsContent: { backgroundColor: C.surfaceLowest, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 16, paddingBottom: 32 },
+  optionItem: { paddingVertical: 16, borderBottomWidth: 0.5, borderBottomColor: '#e5e7eb' },
+  optionText: { fontSize: 16, color: C.onSurface, fontWeight: '500' },
+  cancelOptionBtn: { marginTop: 16, alignItems: 'center', paddingVertical: 12, backgroundColor: C.surfaceContainer, borderRadius: 12 },
+  cancelOptionTxt: { fontSize: 16, fontWeight: '600', color: C.onSurface },
 });
 
 export default HomeScreen;

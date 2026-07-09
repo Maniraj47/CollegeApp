@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../hooks/useAuth';
 
 const C = {
   background: '#f7f9fb',
@@ -15,6 +16,7 @@ const C = {
 };
 
 const LoginScreen = ({ navigation }: any) => {
+  const { login } = useAuth();
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView 
@@ -65,7 +67,7 @@ const LoginScreen = ({ navigation }: any) => {
               </View>
             </View>
 
-            <TouchableOpacity style={styles.loginBtn}>
+            <TouchableOpacity style={styles.loginBtn} onPress={login}>
               <Text style={styles.loginBtnText}>Login</Text>
             </TouchableOpacity>
           </View>

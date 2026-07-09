@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const C = {
   background: '#f7f9fb',
@@ -26,13 +27,14 @@ const TRANSACTIONS = [
 ];
 
 const WalletScreen = () => {
+  const navigation = useNavigation<any>();
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.iconBtn}><Text style={styles.iconTxt}>🔍</Text></TouchableOpacity>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn}>
-          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdcLhO9U7gGW4gpHtZ9W3w_U8s6P2giz6pZqWVL3a26RGtvZrashao3At0Zz5hZ8eC9wNBMf5FSR_F7xb0can8OBcQBBGtJvdPsZJF7fv56oD6yed-dr3M6oqjcoGI1DnCev2hDxxGMA8LUCRK_QkyZHuOZ9gQQ-UdmndUh4I4LYQdVppk549_9GDnyw9Um5GsO6l6Q8gjZhz4R_VhKYA6GUaXfjDCtHunX7x5jARudaz61mnrOEzkFDQmadwprD7Z0jmqUU1T_P4' }} style={styles.profileAvatar} />
+        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatar} />
         </TouchableOpacity>
       </View>
 

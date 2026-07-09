@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const C = {
   background: '#f7f9fb',
@@ -58,14 +59,30 @@ const ITEMS = [
 ];
 
 const MarketplaceScreen = () => {
+  const navigation = useNavigation<any>();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All Items');
+
+  const filteredItems = ITEMS.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = activeCategory === 'All Items' || 
+      (activeCategory === 'Dorm Essentials' && item.category === 'Dorm Stuff') ||
+      (activeCategory === 'Tutoring Services' && item.category === 'Tutoring') ||
+      (item.category === activeCategory);
+      
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}><Text style={styles.iconTxt}>🔍</Text></TouchableOpacity>
+        <View style={styles.iconBtn} />
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn}>
-          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBGcNUOIk296kRmxiwH7TsFB5pgStc-WrxSkGQKq1dBKg9cl0lpKXarmTbuOs8ejBYcIybadPRCo0Ptw9tS8xgX-yeH7pviKdsBoKVBK1Eg4e94Cg1i6QBKT5VClojNBI9ZSU-_xFr_bfU-5jgw7FD_Cxpp852EPIVyPX6OoAbcb6oF0SV0rCAJ8PEtUn9F8Zzeh6kzkEb8p2RPuXkgAj5LEFxOKajXqlY1pEd1LU2R68B4eEEJ_1a2SDUfj_8rLwQ46fGGsO_CHxU' }} style={styles.profileAvatar} />
+        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatar} />
         </TouchableOpacity>
       </View>
 
@@ -80,6 +97,8 @@ const MarketplaceScreen = () => {
               style={styles.searchInput}
               placeholder="Search textbooks, dorm decor, tutoring..."
               placeholderTextColor={C.onSurfaceVariant}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
           </View>
         </View>
@@ -87,16 +106,24 @@ const MarketplaceScreen = () => {
         {/* Categories */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesContainer}>
           {CATEGORIES.map((cat, i) => (
-            <TouchableOpacity key={cat} style={[styles.categoryChip, i === 0 && styles.activeChip]}>
-              <Text style={[styles.categoryText, i === 0 && styles.activeChipText]}>{cat}</Text>
+            <TouchableOpacity 
+              key={cat} 
+              style={[styles.categoryChip, activeCategory === cat && styles.activeChip]}
+              onPress={() => setActiveCategory(cat)}
+            >
+              <Text style={[styles.categoryText, activeCategory === cat && styles.activeChipText]}>{cat}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
         {/* Grid Items */}
         <View style={styles.grid}>
-          {ITEMS.map(item => (
-            <TouchableOpacity key={item.id} style={styles.card}>
+          {filteredItems.length > 0 ? filteredItems.map(item => (
+            <TouchableOpacity 
+              key={item.id} 
+              style={styles.card}
+              onPress={() => navigation.navigate('ProductDetail', { product: item })}
+            >
               <View style={styles.imageContainer}>
                 <Image source={{ uri: item.image }} style={styles.cardImage} />
                 <View style={styles.pricePill}>
@@ -116,7 +143,9 @@ const MarketplaceScreen = () => {
                 </View>
               </View>
             </TouchableOpacity>
-          ))}
+          )) : (
+            <Text style={{ textAlign: 'center', width: '100%', marginTop: 32, color: C.outline }}>No items found matching your criteria.</Text>
+          )}
         </View>
 
         <View style={{ height: 40 }} />

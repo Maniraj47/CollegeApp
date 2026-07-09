@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const C = {
   background: '#f7f9fb',
@@ -51,15 +52,22 @@ const CHATS = [
 ];
 
 const ChatScreen = () => {
+  const navigation = useNavigation<any>();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredChats = CHATS.filter(chat => 
+    chat.user.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}><Text style={styles.iconTxt}>🔍</Text></TouchableOpacity>
+        <View style={styles.iconBtn} />
         <Text style={styles.headerTitle}>College Hub</Text>
-        <TouchableOpacity style={styles.profileBtn}>
+        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image
-            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJc3xDBmo98RsRK2PTlhNNYj8KmDfYydwoSyCd2mSajdF5MeTnbIY3lr3pLLH6UWm5oNu9vz5WHiSIAfD1Ye5uWDBjNpNm6hTeHddoiTV2BpftQtLWfvJPJ4scMsfvPAXQPJTFBHaEr8h17Zt0tapxPx-x-nBSbLy2rkpEatysogbjNzDKi8hN4PUlWtyjpO_8wtxAecJb6uzPelvnCRJDFHDhlDJDBFKwDbE6ILv1o1gIlLR8R_kt7GEJ-q4Vi3ToRd1GCoterWc' }}
+            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }}
             style={styles.profileAvatar}
           />
         </TouchableOpacity>
@@ -74,13 +82,19 @@ const ChatScreen = () => {
               style={styles.searchInput}
               placeholder="Search chats..."
               placeholderTextColor={C.onSurfaceVariant}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
           </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.chatList}>
-          {CHATS.map((chat) => (
-            <TouchableOpacity key={chat.id} style={[styles.chatRow, chat.unread > 0 && styles.chatRowActive]}>
+          {filteredChats.map((chat) => (
+            <TouchableOpacity 
+              key={chat.id} 
+              style={[styles.chatRow, chat.unread > 0 && styles.chatRowActive]}
+              onPress={() => navigation.navigate('ChatDetail', { chat })}
+            >
               {chat.unread > 0 && <View style={styles.activeIndicator} />}
               
               <View style={styles.avatarContainer}>
