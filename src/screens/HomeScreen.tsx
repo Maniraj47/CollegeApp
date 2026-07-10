@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+// import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -61,23 +61,7 @@ const HomeScreen = () => {
 
   // Fetch posts from Firestore
   React.useEffect(() => {
-    const subscriber = firestore()
-      .collection('posts')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot(querySnapshot => {
-        const postsData = querySnapshot.docs.map(documentSnapshot => ({
-          id: documentSnapshot.id,
-          ...documentSnapshot.data(),
-        }));
-        
-        // If there are no posts, we can show the mock posts as fallback for demo
-        if (postsData.length === 0) {
-          setPosts(POSTS);
-        } else {
-          setPosts(postsData);
-        }
-      });
-    return () => subscriber();
+    setPosts(POSTS);
   }, []);
 
   // Comments modal state

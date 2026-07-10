@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Switch, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
+import { signOut } from 'firebase/auth';
+import { auth } from '../config/firebaseConfig';
 
 const C = {
   background: '#f7f9fb',
@@ -103,7 +104,7 @@ const SettingsScreen = () => {
 
         {/* Logout Button */}
         <Pressable style={styles.logoutCard} onPress={() => {
-          auth().signOut().then(() => {
+          signOut(auth).then(() => {
             Alert.alert('Logged Out', 'You have successfully logged out.');
           });
         }}>

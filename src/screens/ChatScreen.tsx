@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+// import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -58,22 +58,7 @@ const ChatScreen = () => {
   const [chats, setChats] = useState<any[]>([]);
 
   React.useEffect(() => {
-    const subscriber = firestore()
-      .collection('chats')
-      .orderBy('updatedAt', 'desc')
-      .onSnapshot(querySnapshot => {
-        const chatsData = querySnapshot.docs.map(documentSnapshot => ({
-          id: documentSnapshot.id,
-          ...documentSnapshot.data(),
-        }));
-        
-        if (chatsData.length === 0) {
-          setChats(CHATS); // Fallback to mock data
-        } else {
-          setChats(chatsData);
-        }
-      });
-    return () => subscriber();
+    setChats(CHATS); // Fallback to mock data
   }, []);
 
   const filteredChats = chats.filter(chat => 

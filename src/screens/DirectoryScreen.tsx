@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+// import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -32,21 +32,7 @@ const DirectoryScreen = () => {
   const [activeFilter, setActiveFilter] = useState('All Students');
 
   React.useEffect(() => {
-    const subscriber = firestore()
-      .collection('users')
-      .onSnapshot(querySnapshot => {
-        const usersData = querySnapshot.docs.map(documentSnapshot => ({
-          id: documentSnapshot.id,
-          ...documentSnapshot.data(),
-        }));
-        
-        if (usersData.length === 0) {
-          setStudents(INITIAL_STUDENTS); // fallback
-        } else {
-          setStudents(usersData);
-        }
-      });
-    return () => subscriber();
+    setStudents(INITIAL_STUDENTS); // fallback
   }, []);
 
   const handleAction = (id: string, action: string) => {

@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, firestore } from '../config/firebaseConfig';
 
 GoogleSignin.configure({
-  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with your Web Client ID
+  webClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com', 
   iosClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com',
 });
 
@@ -28,10 +29,8 @@ const LoginScreen = () => {
       setLoading(true);
       setError('');
       
-      // Check if your device supports Google Play (Android only, resolves instantly on iOS)
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       
-      // Sign in with Google
       const signInResult = await GoogleSignin.signIn();
       let idToken = signInResult.data?.idToken;
       
@@ -40,20 +39,22 @@ const LoginScreen = () => {
       }
 
       // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const googleCredential = GoogleAuthProvider.credential(idToken);
 
       // Sign-in the user with the credential
-      const userCredential = await auth().signInWithCredential(googleCredential);
+      const userCredential = await signInWithCredential(auth, googleCredential);
 
       // Check if this is a new user and create a Firestore document if so
       const uid = userCredential.user.uid;
-      const userDoc = await firestore().collection('users').doc(uid).get();
-      if (!userDoc.exists) {
-        await firestore().collection('users').doc(uid).set({
+      const userDocRef = doc(firestore, 'users', uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
           uid,
           name: userCredential.user.displayName || 'Google User',
           email: userCredential.user.email || '',
-          createdAt: firestore.FieldValue.serverTimestamp(),
+          createdAt: serverTimestamp(),
         });
       }
     } catch (err: any) {

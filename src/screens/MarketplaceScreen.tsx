@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+// import firestore from '@react-native-firebase/firestore';
 
 const C = {
   background: '#f7f9fb',
@@ -66,21 +66,7 @@ const MarketplaceScreen = () => {
   const [items, setItems] = useState<any[]>([]);
 
   React.useEffect(() => {
-    const subscriber = firestore()
-      .collection('products')
-      .onSnapshot(querySnapshot => {
-        const productsData = querySnapshot.docs.map(documentSnapshot => ({
-          id: documentSnapshot.id,
-          ...documentSnapshot.data(),
-        }));
-        
-        if (productsData.length === 0) {
-          setItems(ITEMS); // Fallback to mock data
-        } else {
-          setItems(productsData);
-        }
-      });
-    return () => subscriber();
+    setItems(ITEMS); // Fallback to mock data
   }, []);
 
   const filteredItems = items.filter(item => {

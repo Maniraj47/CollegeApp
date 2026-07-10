@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+// import firestore from '@react-native-firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 
 const C = {
@@ -41,29 +41,7 @@ const ChatDetailScreen = ({ route }: any) => {
   const chatId = chat.id || 'default_chat';
 
   React.useEffect(() => {
-    const subscriber = firestore()
-      .collection('chats')
-      .doc(chatId)
-      .collection('messages')
-      .orderBy('createdAt', 'asc')
-      .onSnapshot(querySnapshot => {
-        const msgs = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            text: data.text,
-            time: 'Just now',
-            outgoing: data.authorId === user?.uid,
-            ...data
-          };
-        });
-        if (msgs.length === 0) {
-          setMessages(INITIAL_MESSAGES);
-        } else {
-          setMessages(msgs);
-        }
-      });
-    return () => subscriber();
+    setMessages(INITIAL_MESSAGES);
   }, [chatId, user]);
 
   return (
@@ -156,13 +134,8 @@ const ChatDetailScreen = ({ route }: any) => {
                 const text = inputText;
                 setInputText('');
                 try {
-                  await firestore().collection('chats').doc(chatId).collection('messages').add({
-                    text,
-                    authorId: user?.uid,
-                    createdAt: firestore.FieldValue.serverTimestamp(),
-                  });
+                  setMessages([...messages, { id: Date.now().toString(), text, time: 'Just now', outgoing: true }]);
                 } catch (e) {
-                  // Fallback for demo if firestore fails
                   setMessages([...messages, { id: Date.now().toString(), text, time: 'Just now', outgoing: true }]);
                 }
               }
