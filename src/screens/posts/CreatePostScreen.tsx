@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, Pressable, Image, KeyboardAvoidingVi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 // import firestore from '@react-native-firebase/firestore';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 const CreatePostScreen = () => {
   const navigation = useNavigation();

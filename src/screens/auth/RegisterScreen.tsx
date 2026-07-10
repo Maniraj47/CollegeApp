@@ -3,11 +3,11 @@ import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Pla
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, firestore } from '../config/firebaseConfig';
+import { auth, firestore } from '../../config/firebaseConfig';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
-  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with your Web Client ID
+  webClientId: '182883918097-r0q0p9sfaavq4f2t3dvhtc2e8cd5t655.apps.googleusercontent.com', 
   iosClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com',
 });
 
@@ -40,6 +40,19 @@ const RegisterScreen = ({ navigation }: any) => {
       setError('Passwords do not match.');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    // Allow .edu emails or saveetha.com emails
+    if (!email.toLowerCase().endsWith('.edu') && !email.toLowerCase().endsWith('@saveetha.com')) {
+      setError('Please use a valid university email (.edu or @saveetha.com).');
+      return;
+    }
+
     setLoading(true);
     setError('');
     
@@ -67,6 +80,14 @@ const RegisterScreen = ({ navigation }: any) => {
       
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const signInResult = await GoogleSignin.signIn();
+      const email = signInResult.data?.user?.email || '';
+
+      // Allow .edu emails or saveetha.com emails
+      if (!email.toLowerCase().endsWith('.edu') && !email.toLowerCase().endsWith('@saveetha.com')) {
+        await GoogleSignin.signOut();
+        throw new Error('Please use a valid university email (.edu or @saveetha.com).');
+      }
+
       let idToken = signInResult.data?.idToken;
       
       if (!idToken) {

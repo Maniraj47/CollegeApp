@@ -4,10 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, firestore } from '../config/firebaseConfig';
+import { auth, firestore } from '../../config/firebaseConfig';
 
 GoogleSignin.configure({
-  webClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com', 
+  webClientId: '182883918097-r0q0p9sfaavq4f2t3dvhtc2e8cd5t655.apps.googleusercontent.com', 
   iosClientId: '182883918097-u736b15ls1nuulqd7gm1d8b4f2ebeu1p.apps.googleusercontent.com',
 });
 
@@ -32,6 +32,14 @@ const LoginScreen = () => {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       
       const signInResult = await GoogleSignin.signIn();
+      const email = signInResult.data?.user?.email || '';
+
+      // Allow .edu emails or saveetha.com emails
+      if (!email.toLowerCase().endsWith('.edu') && !email.toLowerCase().endsWith('@saveetha.com')) {
+        await GoogleSignin.signOut();
+        throw new Error('Please use a valid university email (.edu or @saveetha.com).');
+      }
+
       let idToken = signInResult.data?.idToken;
       
       if (!idToken) {

@@ -7,6 +7,7 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
+
 target 'CollegeApp' do
   config = use_native_modules!
 
@@ -15,6 +16,10 @@ target 'CollegeApp' do
   pod 'AppCheckCore', :modular_headers => true
   pod 'GoogleSignIn', :modular_headers => true
   pod 'PromisesObjC', :modular_headers => true
+  pod 'FirebaseAuthInterop', :modular_headers => true
+  pod 'FirebaseAppCheckInterop', :modular_headers => true
+  pod 'FirebaseFirestoreInternal', :modular_headers => true
+  pod 'FirebaseCoreInternal', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],

@@ -1,27 +1,50 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
+import { User as AuthUser, onAuthStateChanged } from 'firebase/auth';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { auth, firestore } from '../config/firebaseConfig';
+import { User as AppUser } from '../types/firebaseModels';
 
 type AuthState = {
-  user: User | null;
+  user: AuthUser | null;
+  userData: AppUser | null;
   loading: boolean;
 };
 
-const AuthContext = createContext<AuthState>({ user: null, loading: true });
+const AuthContext = createContext<AuthState>({ user: null, userData: null, loading: true });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [userData, setUserData] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (loading) setLoading(false);
+      
+      if (!currentUser) {
+        setUserData(null);
+        setLoading(false);
+      }
     });
-    return unsubscribe;
-  }, [loading]);
+    return unsubscribeAuth;
+  }, []);
 
-  const value = useMemo(() => ({ user, loading }), [user, loading]);
+  useEffect(() => {
+    if (user) {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      const unsubscribeDoc = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setUserData(docSnap.data() as AppUser);
+        } else {
+          setUserData(null);
+        }
+        setLoading(false);
+      });
+      return unsubscribeDoc;
+    }
+  }, [user]);
+
+  const value = useMemo(() => ({ user, userData, loading }), [user, userData, loading]);
 
   return (
     <AuthContext.Provider value={value}>

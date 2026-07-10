@@ -147,10 +147,8 @@ const DirectoryScreen = () => {
                 disabled={student.action === 'Request Sent'}
               >
                 <Text style={[
-                  styles.actionBtnText, 
                   student.action === 'Connect' ? styles.btnConnectText : 
-                  student.action === 'Request Sent' ? styles.btnRequestSentText :
-                  styles.btnMessageText
+                  student.action === 'Request Sent' ? styles.btnRequestSentText : {}
                 ]}>
                   {student.action === 'Connect' ? '➕ Connect' : 
                    student.action === 'Request Sent' ? '✓ Request Sent' :

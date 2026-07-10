@@ -28,7 +28,7 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
           <Text style={styles.iconTxt}>←</Text>
         </Pressable>
         <Text style={styles.headerTitle}>College Hub</Text>
-        <Pressable style={styles.profileBtn}>
+        <Pressable style={styles.profileBtnSmall}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.profileAvatarSmall} />
         </Pressable>
       </View>
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   
   coverPhotoContainer: { width: '100%', height: 160, backgroundColor: C.primaryFixedDim, overflow: 'hidden' },
   coverPhoto: { width: '100%', height: '100%', opacity: 0.6 },
-  coverOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,82,255,0.1)' },
+  coverOverlay: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,82,255,0.1)' },
   
   profileSection: { paddingHorizontal: 16, marginTop: -40, zIndex: 10 },
   profileRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 },

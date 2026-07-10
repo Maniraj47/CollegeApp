@@ -6,17 +6,18 @@ import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-nati
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 // ─── Screen imports (create these files in src/screens/) ───────────────────
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
-import MarketplaceScreen from '../screens/MarketplaceScreen';
-import ChatScreen from '../screens/ChatScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import DirectoryScreen from '../screens/DirectoryScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import ProductDetailScreen from '../screens/ProductDetailScreen';
-import ChatDetailScreen from '../screens/ChatDetailScreen';
-import CreatePostScreen from '../screens/CreatePostScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import RegisterScreen from '../screens/auth/RegisterScreen';
+import HomeScreen from '../screens/main/HomeScreen';
+import MarketplaceScreen from '../screens/marketplace/MarketplaceScreen';
+import ChatScreen from '../screens/chat/ChatScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import DirectoryScreen from '../screens/main/DirectoryScreen';
+import SettingsScreen from '../screens/profile/SettingsScreen';
+import ProductDetailScreen from '../screens/marketplace/ProductDetailScreen';
+import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
+import CreatePostScreen from '../screens/posts/CreatePostScreen';
+import OnboardingScreen from '../screens/auth/OnboardingScreen';
 
 // ─── Hook (create this in src/hooks/useAuth.ts) ────────────────────────────
 import { useAuth } from '../hooks/useAuth';
@@ -191,6 +192,14 @@ const AuthNavigator = () => (
   </AuthStack.Navigator>
 );
 
+// ─── Onboarding stack navigator ───────────────────────────────────────────
+const OnboardingStack = createNativeStackNavigator();
+const OnboardingNavigator = () => (
+  <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
+    <OnboardingStack.Screen name="Onboarding" component={OnboardingScreen} />
+  </OnboardingStack.Navigator>
+);
+
 // ─── Loading splash ────────────────────────────────────────────────────────
 const LoadingScreen = () => (
   <View style={styles.loadingContainer}>
@@ -201,13 +210,19 @@ const LoadingScreen = () => (
 
 // ─── Root navigator — switches between Auth and Main based on login state ──
 const AppNavigator = () => {
-  const { user, loading } = useAuth();
+  const { user, userData, loading } = useAuth();
 
   if (loading) return <LoadingScreen />;
 
   return (
     <NavigationContainer>
-      {user ? <MainStackNavigator /> : <AuthNavigator />}
+      {!user ? (
+        <AuthNavigator />
+      ) : userData?.onboardingCompleted ? (
+        <MainStackNavigator />
+      ) : (
+        <OnboardingNavigator />
+      )}
     </NavigationContainer>
   );
 };
