@@ -10,7 +10,11 @@ type AuthState = {
   loading: boolean;
 };
 
-const AuthContext = createContext<AuthState>({ user: null, userData: null, loading: true });
+const AuthContext = createContext<AuthState>({
+  user: null,
+  userData: null,
+  loading: true,
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -20,17 +24,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      
       if (!currentUser) {
         setUserData(null);
         setLoading(false);
       }
     });
-    return unsubscribeAuth;
+    return () => unsubscribeAuth();
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       const userDocRef = doc(firestore, 'users', user.uid);
       const unsubscribeDoc = onSnapshot(userDocRef, (docSnap) => {
         if (docSnap.exists()) {
@@ -40,11 +43,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         setLoading(false);
       });
-      return unsubscribeDoc;
+      return () => unsubscribeDoc();
     }
-  }, [user]);
+  }, [user?.uid]);
 
-  const value = useMemo(() => ({ user, userData, loading }), [user, userData, loading]);
+  const value = useMemo(
+    () => ({ user, userData, loading }),
+    [user, userData, loading]
+  );
 
   return (
     <AuthContext.Provider value={value}>

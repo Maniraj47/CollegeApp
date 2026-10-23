@@ -84,7 +84,7 @@ const ProductDetailScreen = ({ route }: any) => {
 
           {/* Title */}
           <Text style={styles.title}>{product.title}</Text>
-          <Text style={styles.subtitle}>ISBN: 978-1305080485 • Author: John McMurry</Text>
+          <Text style={styles.subtitle}>{product.category}</Text>
 
           {/* Seller */}
           <Pressable style={styles.sellerCard} onPress={() => navigation.navigate('Profile')}>
@@ -163,10 +163,7 @@ const ProductDetailScreen = ({ route }: any) => {
           <View style={styles.detailsBox}>
             <Text style={styles.detailsTitle}>Details</Text>
             <Text style={styles.detailsText}>
-              Used for Chem 201 last semester. Pages are completely clean, no highlighting, pen marks, or folded corners. There is slight wear on the bottom right corner of the front cover from my backpack, but it's structurally perfect.
-            </Text>
-            <Text style={styles.detailsText}>
-              Need to sell this quickly to afford next semester's lab materials! Happy to meet up anywhere near the Student Union building on Tuesdays/Thursdays, or I can ship it to you if you cover the cost.
+              {product.description || 'No description provided.'}
             </Text>
             <View style={styles.tagsContainer}>
               <View style={styles.tag}><Text style={styles.tagText}>📍 Main Campus</Text></View>
@@ -180,7 +177,7 @@ const ProductDetailScreen = ({ route }: any) => {
 
       {/* Sticky Bottom Actions */}
       <View style={styles.bottomBar}>
-        <Pressable style={styles.messageBtn} onPress={() => navigation.navigate('ChatDetail', { chat: { name: product.sellerName || product.seller } })}>
+        <Pressable style={styles.messageBtn} onPress={() => navigation.navigate('ChatDetail', { chat: { name: product.sellerName || product.seller, avatar: product.sellerAvatar, sellerId: product.sellerId } })}>
           <Text style={styles.messageBtnText}>💬 Message</Text>
         </Pressable>
         <Pressable style={styles.buyBtn} onPress={() => Alert.alert('Purchase Started', 'Setting up secure escrow for this transaction...')}>

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-// import firestore from '@react-native-firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { firestore } from '../../config/firebaseConfig';
+import { useAuth } from '../../hooks/useAuth';
+import { REAL_FIREBASE_USERS, RealUser } from '../../constants/realUsers';
 
 const C = {
   background: '#f7f9fb',
@@ -18,52 +21,89 @@ const C = {
   success: '#22c55e',
 };
 
-const CHATS = [
-  {
-    id: '1',
-    user: 'Sarah Jenkins',
-    verified: true,
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCuFdaYdfEaYJz8AvW0oDQaC5vgM3NTfCj4IWOgXAFZ40Pqr85WUHDz2dfmhhhBFpqmYTMIlB1JMecWgjXZmn74r1crvmnBMyRrAoALeUX0H_lExFJ2cNJXKbATVZeiT7Y4Mu9uw4P9hiEYoX1BPLPCGTH7uF6nZInC_aVh9lyr-MMafctslypOiYFp9XEtCEJ7-szJrcajZ2NdhGFHvST0FqgMvFJSzMaVOGeRmPMGVQwW7WjMOOQ_a9GaI5SZgtzvMXzf_hpghtw',
-    online: true,
-    lastMessage: 'Yes! I booked a room in the library.',
-    time: 'Just now',
-    unread: 2,
-  },
-  {
-    id: '2',
-    user: 'CS101 Study Group',
-    verified: false,
-    isGroup: true,
-    avatar1: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxaFwtMitWmJWf7TnSUmuPnfZ28N-kTcMAVZQ0MKTxaNg98OiY6Vbx79eOwz50uhuUZflHCei-Lx8Y5Z_53wt27mcsVeZgtNOgAo1HuiFeABpZZQyf0YTSqTANFyjwc1KID2_DpDxoAFO2H57JGCDWvYSHmHRneW7gt87nHSeCnRrJ1l5b7HjJBqgQdStainSCDyTUpqIv05fm4_vCzIPDm3O5t0sHGeJazz5BDh-q5QU6hY5ocsuQRZ3g0bkFVTEndn6tzQe858I',
-    avatar2: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC-Y012q6joA2_ndgdSct3nP_YRsTUamPlBQzDITBklhIxqx4eA954q-O-TaUUpfVXd5OmcIWIpKIPaT4zQRHDLZeG4k98yxqaUTVfAsepGbVG7aucsTEOnN5IeUU6XhgdlQZrBhV88Ct-gJw57U0YFxmKhTqQEa2KOak8ll82z3zk0D4VuWvFxst0HJp85nvAROdayfBBLl6u3i8dsd0UwuRq9QHfcCldQgMkulJM2931V6wS4OaVvSTnuP_oLp4fxzelaBWhMVVg',
-    lastMessage: 'Mike: Who has the notes for chapter 4?',
-    time: '10:42 AM',
-    unread: 0,
-  },
-  {
-    id: '3',
-    user: 'Alex Thorne',
-    verified: false,
-    trusted: true,
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqThkcJQwPdtgZuvdVi8PIyMUWOp2ujP_y6qzwk0qmaM3i1qbV0mKWzbFWmuFs21dNaNb5HzoVHFbODDIDIwyFRS_ZsjBpxoT3IiiEfgaEHsGWmGbJMrlVy75gxbz6NtDWC-dxTiK3Jc2JP1VMS3qqghSzaLfk1zQYZMfxWFNK0nLkmUps7G0F9Si3Z9G4nworwPCAQxmzjghLD3f4mt03WDIXZJ1gqLNMgSuQX2IWJPGh1JxbCs-FGxei7dB5h8kTGumMqWebSTQ',
-    lastMessage: 'Thanks for meeting up!',
-    time: 'Yesterday',
-    unread: 0,
-  }
-];
-
 const ChatScreen = () => {
   const navigation = useNavigation<any>();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [chats, setChats] = useState<any[]>([]);
+  const [campusStudents, setCampusStudents] = useState<RealUser[]>(REAL_FIREBASE_USERS);
+  const [recentMessages, setRecentMessages] = useState<any[]>([]);
 
-  React.useEffect(() => {
-    setChats(CHATS); // Fallback to mock data
+  const myUid = user?.uid || '';
+
+  // Sync real users from Firestore
+  useEffect(() => {
+    try {
+      const unsub = onSnapshot(collection(firestore, 'users'), (snap) => {
+        if (!snap.empty) {
+          const fetched = snap.docs.map((docSnap) => ({
+            uid: docSnap.id,
+            id: docSnap.id,
+            displayName: docSnap.data().displayName || docSnap.data().name || 'Student',
+            email: docSnap.data().email || '',
+            photoURL: docSnap.data().photoUrl || docSnap.data().photoURL || '',
+            department: docSnap.data().department || 'Computer Science',
+            year: docSnap.data().year || 'Student',
+            regNo: docSnap.data().regNo || '',
+          })) as RealUser[];
+
+          const merged = [...REAL_FIREBASE_USERS];
+          fetched.forEach((f) => {
+            const idx = merged.findIndex((m) => m.uid === f.uid);
+            if (idx >= 0) merged[idx] = { ...merged[idx], ...f };
+            else merged.push(f);
+          });
+          setCampusStudents(merged);
+        }
+      });
+      return () => unsub();
+    } catch (err) {
+      console.warn('Error fetching users in ChatScreen:', err);
+    }
   }, []);
 
-  const filteredChats = chats.filter(chat => 
-    (chat.user || chat.name || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Listen to Firestore messages involving the current user
+  useEffect(() => {
+    if (!myUid) return;
+    try {
+      const q = query(
+        collection(firestore, 'messages'),
+        where('participants', 'array-contains', myUid)
+      );
+      const unsub = onSnapshot(q, (snapshot) => {
+        const fetched = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+        }));
+        setRecentMessages(fetched);
+      });
+      return () => unsub();
+    } catch (err) {
+      console.warn('Error listening to messages:', err);
+    }
+  }, [myUid]);
+
+  // Filter out currently logged-in user to show real peers to chat with
+  const availablePeers = campusStudents.filter((s) => s.uid !== myUid);
+
+  // Group latest message per partner
+  const latestMessageMap = new Map<string, any>();
+  recentMessages.forEach((msg: any) => {
+    const partnerId = msg.senderId === myUid ? msg.recipientId : msg.senderId;
+    if (partnerId) {
+      latestMessageMap.set(partnerId, msg);
+    }
+  });
+
+  const filteredPeers = availablePeers.filter((student) => {
+    const name = student.displayName || '';
+    const dept = student.department || '';
+    const email = student.email || '';
+    return (
+      name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -73,7 +113,11 @@ const ChatScreen = () => {
         <Text style={styles.headerTitle}>College Hub</Text>
         <Pressable style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image
-            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }}
+            source={{
+              uri:
+                user?.photoURL ||
+                'https://lh3.googleusercontent.com/a/ACg8ocIWCiFhxdRry7YHBoqbZnxRk5lGqdHUYm8vixKrUUrLdM7hQQ=s96-c',
+            }}
             style={styles.profileAvatar}
           />
         </Pressable>
@@ -84,9 +128,9 @@ const ChatScreen = () => {
           <Text style={styles.screenTitle}>Messages</Text>
           <View style={styles.searchBar}>
             <Text style={styles.searchIcon}>🔍</Text>
-            <TextInput 
+            <TextInput
               style={styles.searchInput}
-              placeholder="Search chats..."
+              placeholder="Search campus peers..."
               placeholderTextColor={C.onSurfaceVariant}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -95,53 +139,73 @@ const ChatScreen = () => {
         </View>
 
         <ScrollView contentContainerStyle={styles.chatList}>
-          {filteredChats.map((chat) => (
-            <Pressable 
-              key={chat.id} 
-              style={[styles.chatRow, chat.unread > 0 && styles.chatRowActive]}
-              onPress={() => navigation.navigate('ChatDetail', { chat })}
-            >
-              {chat.unread > 0 && <View style={styles.activeIndicator} />}
-              
-              <View style={styles.avatarContainer}>
-                {chat.isGroup ? (
-                  <View style={styles.groupAvatar}>
-                    <Image source={{ uri: chat.avatar1 }} style={[styles.gAvatar, { top: 0, left: 0 }]} />
-                    <Image source={{ uri: chat.avatar2 }} style={[styles.gAvatar, { bottom: 0, right: 0 }]} />
+          {filteredPeers.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={{ fontSize: 32, marginBottom: 8 }}>👥</Text>
+              <Text style={styles.emptyTitle}>No other students found</Text>
+              <Text style={styles.emptySubtitle}>
+                Registered students like Mani Raj will appear here once connected.
+              </Text>
+            </View>
+          ) : (
+            filteredPeers.map((peer) => {
+              const lastMsg = latestMessageMap.get(peer.uid);
+              const previewText = lastMsg ? lastMsg.text : `Tap to chat with ${peer.displayName.split(' ')[0]}`;
+              const timeText = lastMsg?.createdAt?.toDate
+                ? new Date(lastMsg.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : 'Active';
+
+              return (
+                <Pressable
+                  key={peer.uid}
+                  style={styles.chatRow}
+                  onPress={() =>
+                    navigation.navigate('ChatDetail', {
+                      chat: {
+                        id: peer.uid,
+                        recipientId: peer.uid,
+                        user: peer.displayName,
+                        name: peer.displayName,
+                        avatar: peer.photoURL,
+                        department: peer.department,
+                        verified: true,
+                        online: true,
+                      },
+                    })
+                  }
+                >
+                  <View style={styles.avatarContainer}>
+                    <Image
+                      source={{
+                        uri:
+                          peer.photoURL ||
+                          `https://api.dicebear.com/7.x/initials/svg?seed=${peer.displayName}`,
+                      }}
+                      style={styles.avatar}
+                    />
+                    <View style={styles.onlineDot} />
                   </View>
-                ) : (
-                  <>
-                    <Image source={{ uri: chat.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.avatar} />
-                    {chat.online && <View style={styles.onlineDot} />}
-                  </>
-                )}
-              </View>
-              
-              <View style={styles.chatInfo}>
-                <View style={styles.chatRowTop}>
-                  <View style={styles.nameRow}>
-                    <Text style={styles.chatName}>{chat.user || chat.name}</Text>
-                    {chat.verified && <View style={styles.badge}><Text style={styles.badgeText}>✓</Text></View>}
+
+                  <View style={styles.chatInfo}>
+                    <View style={styles.chatRowTop}>
+                      <View style={styles.nameRow}>
+                        <Text style={styles.chatName}>{peer.displayName}</Text>
+                        <View style={styles.badge}>
+                          <Text style={styles.badgeText}>✓</Text>
+                        </View>
+                      </View>
+                      <Text style={styles.chatTime}>{timeText}</Text>
+                    </View>
+
+                    <Text style={styles.deptText}>{peer.department} • {peer.year}</Text>
+                    <Text style={styles.chatMessage} numberOfLines={1}>
+                      {previewText}
+                    </Text>
                   </View>
-                  <Text style={[styles.chatTime, chat.unread > 0 && { color: C.primary }]}>{chat.time}</Text>
-                </View>
-                
-                {chat.trusted && (
-                  <View style={styles.trustedBadge}>
-                    <Text style={styles.trustedText}>🔥 TRUSTED</Text>
-                  </View>
-                )}
-                
-                <Text style={styles.chatMessage} numberOfLines={1}>{chat.lastMessage}</Text>
-              </View>
-              
-              {chat.unread > 0 && (
-                <View style={styles.unreadBadge}>
-                  <Text style={styles.unreadText}>{chat.unread}</Text>
-                </View>
-              )}
-            </Pressable>
-          ))}
+                </Pressable>
+              );
+            })
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -150,57 +214,77 @@ const ChatScreen = () => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: C.surfaceLowest },
-  header: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    paddingHorizontal: 16, 
-    height: 52, 
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    height: 52,
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderBottomWidth: 0.5,
-    borderBottomColor: '#e5e7eb'
+    borderBottomColor: C.surfaceHigh,
   },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: C.primaryContainer, letterSpacing: -0.5 },
-  profileBtn: { width: 32, height: 32 },
-  profileAvatar: { width: 32, height: 32, borderRadius: 16, borderWidth: 1.5, borderColor: C.primaryContainer },
-  iconBtn: { width: 32, height: 32, justifyContent: 'center', alignItems: 'center' },
-  iconTxt: { fontSize: 18 },
-  
-  content: { flex: 1, backgroundColor: C.surfaceLowest },
-  
-  listHeader: { padding: 20, paddingBottom: 10 },
-  screenTitle: { fontSize: 28, fontWeight: '800', color: C.onSurface, marginBottom: 16 },
-  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.background, borderRadius: 24, height: 48, paddingHorizontal: 16 },
-  searchIcon: { fontSize: 18, color: C.outline, marginRight: 8 },
-  searchInput: { flex: 1, fontSize: 16, color: C.onSurface },
-  
-  chatList: { flexGrow: 1, paddingBottom: 40 },
-  chatRow: { flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: C.background },
-  chatRowActive: { backgroundColor: 'rgba(0,62,199,0.05)' },
-  activeIndicator: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: C.primary, borderTopRightRadius: 4, borderBottomRightRadius: 4 },
-  
-  avatarContainer: { position: 'relative', marginRight: 12 },
-  avatar: { width: 56, height: 56, borderRadius: 28 },
-  onlineDot: { position: 'absolute', bottom: 0, right: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: C.success, borderWidth: 2, borderColor: C.surfaceLowest },
-  
-  groupAvatar: { width: 56, height: 56, position: 'relative' },
-  gAvatar: { position: 'absolute', width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: C.surfaceLowest },
-  
+  iconBtn: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center' },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: C.onSurface },
+  profileBtn: { width: 36, height: 36, borderRadius: 18, overflow: 'hidden' },
+  profileAvatar: { width: 36, height: 36, borderRadius: 18 },
+
+  content: { flex: 1 },
+  listHeader: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 },
+  screenTitle: { fontSize: 28, fontWeight: '800', color: C.onSurface, letterSpacing: -0.5, marginBottom: 12 },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.surfaceContainer,
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    height: 44,
+  },
+  searchIcon: { fontSize: 16, marginRight: 8 },
+  searchInput: { flex: 1, height: 44, fontSize: 15, color: C.onSurface },
+
+  chatList: { paddingHorizontal: 16, paddingBottom: 24 },
+  chatRow: {
+    flexDirection: 'row',
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderBottomWidth: 0.5,
+    borderBottomColor: C.surfaceContainer,
+  },
+  avatarContainer: { position: 'relative', marginRight: 14 },
+  avatar: { width: 50, height: 50, borderRadius: 25 },
+  onlineDot: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 13,
+    height: 13,
+    borderRadius: 6.5,
+    backgroundColor: C.success,
+    borderWidth: 2,
+    borderColor: C.surfaceLowest,
+  },
+
   chatInfo: { flex: 1, justifyContent: 'center' },
-  chatRowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  chatName: { fontSize: 16, fontWeight: '600', color: C.onSurface },
-  badge: { width: 14, height: 14, borderRadius: 7, backgroundColor: C.primaryContainer, justifyContent: 'center', alignItems: 'center' },
-  badgeText: { color: 'white', fontSize: 8, fontWeight: 'bold' },
+  chatRowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  chatName: { fontSize: 16, fontWeight: '700', color: C.onSurface },
+  badge: {
+    backgroundColor: C.primaryContainer,
+    borderRadius: 8,
+    width: 15,
+    height: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: { color: '#ffffff', fontSize: 9, fontWeight: 'bold' },
   chatTime: { fontSize: 12, color: C.outline },
-  
-  trustedBadge: { alignSelf: 'flex-start', backgroundColor: 'rgba(254,107,0,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8, marginBottom: 4 },
-  trustedText: { fontSize: 9, color: '#fe6b00', fontWeight: '700' },
-  
-  chatMessage: { fontSize: 14, color: C.outline, paddingRight: 20 },
-  
-  unreadBadge: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.primary, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
-  unreadText: { color: 'white', fontSize: 12, fontWeight: '700' },
+  deptText: { fontSize: 12, color: C.primary, fontWeight: '600', marginBottom: 2 },
+  chatMessage: { fontSize: 13, color: C.onSurfaceVariant },
+
+  emptyContainer: { padding: 40, alignItems: 'center', justifyContent: 'center' },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: C.onSurface, marginBottom: 6 },
+  emptySubtitle: { fontSize: 13, color: C.onSurfaceVariant, textAlign: 'center', maxWidth: 260 },
 });
 
 export default ChatScreen;

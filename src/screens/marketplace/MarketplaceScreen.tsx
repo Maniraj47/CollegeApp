@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-// import firestore from '@react-native-firebase/firestore';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { firestore } from '../../config/firebaseConfig';
 
 const C = {
   background: '#f7f9fb',
@@ -20,53 +21,28 @@ const C = {
 
 const CATEGORIES = ['All Items', 'Textbooks', 'Dorm Essentials', 'Tutoring Services', 'Electronics'];
 
-const ITEMS = [
-  {
-    id: '1',
-    title: 'Calculus Early Transcendentals 8th Ed',
-    price: '₹3,700',
-    category: 'Textbooks',
-    seller: 'Alex Chen',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBSGxEiKr77u8j5cd1a0SZIMTTnGx4dSyEdoJLl3Yz6-AJ_dYqknEtolmz9sYGWvv403uG7BWusDdTr8CLJbrHpYdOY8UOSHZO70tcYEcPDq-OCemTmpEAFTPRr2wGw3yW5jVEGCyWObUmOV45aSSWEpoX-NNJwuCIpVGP0GQWP_TR88944rtXEGswd56X6Mq8zseejyX1KCT5GvO9307AbUs0MLCSd-CCX3hMtA21cLx4EuSQnrKWPpYb_kKUwJhLzU6Coy4RMQy8',
-    sellerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA6r-xhNFGTFNwImTSdxjwT-DfbDVleSz-gVsUxf-myqeA8PZLcbjMSSuf1JaSSKjJyg4Rvh4eB_tFAAg8B9Qm6gChYuMt5aZQfsWmy0863yyae-JA-8U6il5kacGsPXIWG_tc98Glavd7qySF-wdioEZB25yYMXxRT9oaxRJ5EZ2bz47ONEnpto_557r8gHkL7OhfUgdfI_eP2UBGLKBPhjoH0vJ78rewu6XpbD9U8c7oG2bQIys-gZngKAHVwgpglwdjkhDB7dLQ',
-  },
-  {
-    id: '2',
-    title: 'Organic Chemistry 101 Tutoring',
-    price: '₹1,600/hr',
-    category: 'Tutoring',
-    seller: 'Sarah Jenkins',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtaETVHvljqQuGoTnUwPiJgpiRapRDwaSyYA1TTaz1gp8IHeZK-6fhNIkp8kwm4UEk7XD4qHY4TfmDbn3_jBVSZaUdgXSSAeE0XJz0_ASlTD63vQvSzDl9fQhLmG_Dv2Xi_kPdO_vyfVY9RuXbRtgadK8SEICM8RJfMg4tDQi9qjPK0Kmq40iZjAS40EyxVr33SHLPCcFgO5AUQPqD_PzQ9vjsl-gAxt8EvqtUbmWE6dzLKwuCzYa908qNyG6UbjOcES1NaxwbgRw',
-    sellerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCiWVeICCwzhVRvqUvRMxcd3esXf78wbiTj9CcMN93Modfhnjnwf7uuQunZibeXNilGftgwSDSV5oUak26FYrJZKL4pKCQklkVXKVAGal_ZCW_VQe7FyIP4WVL6_BaCLdJq-ADbpuMbHiLUvam0n7dKQS80ZeMO5SGkbFvMhQvIysH700BJh6ehbw8vUs9nMYKTqOGhwHNMgZGiTJj6x7yxia8oHyEVcgthmOuP-0BEDo37-fBuowkYKlKwwkNhIfpgqYs5HvmNeRc',
-  },
-  {
-    id: '3',
-    title: 'Danby Mini Fridge - Perfect Condition',
-    price: '₹5,000',
-    category: 'Dorm Stuff',
-    seller: 'Marcus T.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDWME9iwZS8V5AgqgYJRgHCYxlqsF-hd7OZcDZlo-WMd0zc-tgNJlB-spL7zpfXiNU3KJj2IyKIaephZsF_ivCbBUwnfV6eOKqMWagTG_k6ehH9HgkqpREdTjwPqSgm5BCFYdD8wRf-hQMA1Zaaq7_O9WLKbnGjMfwJ7nxexgT4vk-slaLW-dUmdtPiHO4A1QfyomWQuuRDjL9usnY4JS8_w67s1MaPsiJzNI0dXpLHpuMSmgmbJMXlclvgpO5yWiPvIf3peEHNYjM',
-    sellerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuChcDr5z3aS8aP9tvKBFFQYPyo0_-UeCyceyxVlNMiu2NHndG2kJr69dvh-GCONv2LiKYjZfj3c4HQuMwLpwZx571R8PVBV9Jsq6lDlvnlNTW_Xqpd21-Q2K-5V0ivMVsjf1-iGUflf_XaitPpmDDhS4AxPIHHTGlgDkdowBsaLQr5eFjt6QAM0GwWqpeGN6B_E30YVzc5QNpfpl4nj544o_YkelwQpcTfzuIiDQ0wFXovrnErwWQV-pF2SXkjpmkXZvVvrUL-a0VQ',
-  },
-  {
-    id: '4',
-    title: 'MacBook Pro M1 2020 (8GB RAM, 256GB)',
-    price: '₹70,000',
-    category: 'Electronics',
-    seller: 'Emily R.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0glZ0eavI72_scOsFF2VP_z4VIOF-zFKy-JUft4z9VPF-s1rv2XLyHSpkCJUyvv0YVCyaggwdAiG7k5k7CDnKW2_EsgM7LrhPdckh-Cp42F4btTUnWBmd7_BPoJwiWEuL31-FOg3MuuycxZlc5wkU6Sy4c-jhvsuq06CF0ztoGuZkz0EtnCQnr_3f5iu56WcfvwUgRRz48URXS-sxIT85fYBdRGISMh7hz0Zt6vm0KVsZ8uu9tJi36owMSWZcTdt6-7ylekWqgZU',
-    sellerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNpbatKp0UocH9s2VedIa6-kXnulsqhuEMgbMIf1kxtxjXAcSAbeR5W5VJVVkYWUpcO-SC2J8umxPlRmIGeglBdfgqYOB_DxSOmSHyFG4WaRX_R-DxlzlcyyhgTj_szejasK_V668K3YNT4E9J8PSKeIqRoxgkqJ5AI-fmlwos7V2DUhNcf3CYdSWy0TyX8E4I-m705aWdchpMt0N2Scbnd5UVsmOsFD7Ha03PUvTAxdZGGHg_CacGr5-_blQVIEfF_2dI-XqWJ28',
-  },
-];
-
 const MarketplaceScreen = () => {
   const navigation = useNavigation<any>();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All Items');
   const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    setItems(ITEMS); // Fallback to mock data
+  useEffect(() => {
+    const q = query(collection(firestore, 'products'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const products = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setItems(products);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error fetching products:', error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const filteredItems = items.filter(item => {
@@ -158,6 +134,14 @@ const MarketplaceScreen = () => {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Floating Action Button */}
+      <Pressable 
+        style={styles.fab} 
+        onPress={() => navigation.navigate('CreatePost')}
+      >
+        <Text style={styles.fabIcon}>+</Text>
+      </Pressable>
     </SafeAreaView>
   );
 };
@@ -222,6 +206,9 @@ const styles = StyleSheet.create({
   sellerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sellerAvatar: { width: 20, height: 20, borderRadius: 10 },
   sellerName: { fontSize: 11, color: C.onSurfaceVariant, flex: 1 },
+
+  fab: { position: 'absolute', bottom: 100, right: 20, width: 60, height: 60, borderRadius: 30, backgroundColor: C.primaryContainer, justifyContent: 'center', alignItems: 'center', shadowColor: C.primaryContainer, shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 5 },
+  fabIcon: { fontSize: 32, color: 'white', fontWeight: '400', marginTop: -4 },
 });
 
 export default MarketplaceScreen;

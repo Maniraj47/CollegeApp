@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-// import firestore from '@react-native-firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { firestore } from '../../config/firebaseConfig';
 
 const C = {
   background: '#f7f9fb',
@@ -18,21 +19,33 @@ const C = {
   outlineVariant: '#c3c5d9',
 };
 
-const INITIAL_STUDENTS = [
-  { id: '1', name: 'Sarah Jenkins', major: 'Computer Science', studentId: '2024-001248', verified: true, action: 'Connect' },
-  { id: '2', name: 'Marcus Torres', major: 'Business Administration', studentId: '2021-008932', verified: true, action: 'Message' },
-  { id: '3', name: 'Aisha Patel', major: 'Graphic Design', studentId: '2023-004451', verified: true, action: 'Connect' },
-  { id: '4', name: 'Liam Chen', major: 'Mechanical Engineering', studentId: '2024-009210', verified: true, action: 'Connect' },
-];
-
 const DirectoryScreen = () => {
   const navigation = useNavigation<any>();
   const [students, setStudents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All Students');
 
-  React.useEffect(() => {
-    setStudents(INITIAL_STUDENTS); // fallback
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(firestore, 'users'), (snapshot) => {
+      const realUsers = snapshot.docs.map(doc => ({
+        id: doc.id,
+        name: doc.data().displayName || doc.data().email?.split('@')[0] || 'Student',
+        major: doc.data().department || 'General Studies',
+        studentId: doc.data().regNo || 'Verified',
+        email: doc.data().email || '',
+        verified: true,
+        action: 'Connect',
+        avatar: doc.data().photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${doc.data().displayName || 'Student'}`,
+      }));
+      setStudents(realUsers);
+      setLoading(false);
+    }, (err) => {
+      console.warn('Error fetching users:', err);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleAction = (id: string, action: string) => {

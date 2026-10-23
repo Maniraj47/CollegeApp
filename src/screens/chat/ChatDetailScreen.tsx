@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-// import firestore from '@react-native-firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '../../config/firebaseConfig';
 import { useAuth } from '../../hooks/useAuth';
 
 const C = {
@@ -19,30 +20,110 @@ const C = {
   success: '#22c55e',
 };
 
-const INITIAL_MESSAGES = [
-  { id: '1', text: 'Hey! Are we still on for the study session later?', time: '2:14 PM', outgoing: false },
-  { id: '2', text: 'Yes! I booked a room in the library. 📍 Room 304.', time: '2:16 PM', outgoing: true },
-  { id: '3', text: "Perfect, see you at 4! I'll bring the snacks 🍿", time: 'Just now', outgoing: false },
-];
-
 const ChatDetailScreen = ({ route }: any) => {
   const navigation = useNavigation<any>();
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const { user, userData } = useAuth();
+  const [messages, setMessages] = useState<any[]>([]);
   const [inputText, setInputText] = useState('');
+  const scrollViewRef = useRef<ScrollView>(null);
+
   const { chat } = route.params || {
     chat: {
-      user: 'Sarah Jenkins',
-      verified: true,
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCuFdaYdfEaYJz8AvW0oDQaC5vgM3NTfCj4IWOgXAFZ40Pqr85WUHDz2dfmhhhBFpqmYTMIlB1JMecWgjXZmn74r1crvmnBMyRrAoALeUX0H_lExFJ2cNJXKbATVZeiT7Y4Mu9uw4P9hiEYoX1BPLPCGTH7uF6nZInC_aVh9lyr-MMafctslypOiYFp9XEtCEJ7-szJrcajZ2NdhGFHvST0FqgMvFJSzMaVOGeRmPMGVQwW7WjMOOQ_a9GaI5SZgtzvMXzf_hpghtw',
+      id: 'default',
+      recipientId: 'default',
+      user: 'Student',
+      avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=Student',
       online: true,
+    },
+  };
+
+  const partnerId = chat.recipientId || chat.id;
+  const partnerName = chat.user || chat.name || 'Student';
+  const partnerAvatar = chat.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${partnerName}`;
+  const myUid = user?.uid || '';
+
+  // Listen to Firestore messages between myUid and partnerId
+  useEffect(() => {
+    if (!myUid || !partnerId) return;
+
+    try {
+      const q = query(
+        collection(firestore, 'messages'),
+        where('participants', 'array-contains', myUid)
+      );
+
+      const unsub = onSnapshot(q, (snapshot) => {
+        const fetched: any[] = [];
+        snapshot.docs.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (
+            (data.senderId === myUid && data.recipientId === partnerId) ||
+            (data.senderId === partnerId && data.recipientId === myUid)
+          ) {
+            fetched.push({
+              id: docSnap.id,
+              ...data,
+              outgoing: data.senderId === myUid,
+            });
+          }
+        });
+
+        // Sort ascending by time
+        fetched.sort((a, b) => {
+          const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
+          const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
+          return timeA - timeB;
+        });
+
+        setMessages(fetched);
+        setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+      });
+
+      return () => unsub();
+    } catch (err) {
+      console.warn('Error fetching messages in ChatDetailScreen:', err);
+    }
+  }, [myUid, partnerId]);
+
+  const handleSend = async () => {
+    const text = inputText.trim();
+    if (!text || !myUid || !partnerId) return;
+
+    const myName = userData?.displayName || user?.displayName || user?.email?.split('@')[0] || 'Student';
+    const myAvatar = userData?.photoUrl || user?.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${myName}`;
+    const threadId = [myUid, partnerId].sort().join('_');
+
+    setInputText('');
+
+    // Optimistically add to UI
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: 'local_' + Date.now(),
+        text,
+        time: 'Just now',
+        outgoing: true,
+      },
+    ]);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+
+    try {
+      await addDoc(collection(firestore, 'messages'), {
+        threadId,
+        participants: [myUid, partnerId],
+        senderId: myUid,
+        senderName: myName,
+        senderAvatar: myAvatar,
+        recipientId: partnerId,
+        recipientName: partnerName,
+        recipientAvatar: partnerAvatar,
+        text,
+        createdAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.warn('Failed to send message:', err);
     }
   };
-  const { user } = useAuth();
-  const chatId = chat.id || 'default_chat';
-
-  React.useEffect(() => {
-    setMessages(INITIAL_MESSAGES);
-  }, [chatId, user]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -58,15 +139,17 @@ const ChatDetailScreen = ({ route }: any) => {
           
           <View style={styles.headerProfile}>
             <View style={styles.avatarContainer}>
-              <Image source={{ uri: chat.avatar }} style={styles.avatar} />
-              {chat.online && <View style={styles.onlineDot} />}
+              <Image source={{ uri: partnerAvatar }} style={styles.avatar} />
+              <View style={styles.onlineDot} />
             </View>
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Text style={styles.headerName}>{chat.user || chat.name}</Text>
-                {chat.verified && <View style={styles.verifiedBadge}><Text style={styles.verifiedText}>✓</Text></View>}
+                <Text style={styles.headerName}>{partnerName}</Text>
+                <View style={styles.verifiedBadge}>
+                  <Text style={styles.verifiedText}>✓</Text>
+                </View>
               </View>
-              {chat.online && <Text style={styles.onlineText}>Online</Text>}
+              <Text style={styles.onlineText}>● Live Chat</Text>
             </View>
           </View>
           
@@ -78,68 +161,58 @@ const ChatDetailScreen = ({ route }: any) => {
         </View>
 
         {/* Chat Area */}
-        <ScrollView contentContainerStyle={styles.chatScroll} style={styles.chatArea}>
-          {/* Timestamp */}
-          <View style={styles.timestampContainer}>
-            <View style={styles.timestampPill}>
-              <Text style={styles.timestampText}>Today</Text>
+        <ScrollView 
+          ref={scrollViewRef}
+          contentContainerStyle={styles.chatScroll} 
+          style={styles.chatArea}
+        >
+          {messages.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={{ fontSize: 36, marginBottom: 8 }}>👋</Text>
+              <Text style={styles.emptyTitle}>Start a conversation with {partnerName}</Text>
+              <Text style={styles.emptySubtitle}>Say hello to start chatting in real-time!</Text>
             </View>
-          </View>
+          ) : (
+            messages.map((msg: any) => {
+              const timeDisplay = msg.createdAt?.toDate 
+                ? new Date(msg.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : (msg.time || 'Just now');
 
-          {messages.map((msg: any) => (
-            <View key={msg.id} style={[styles.messageRow, msg.outgoing ? styles.messageRowOutgoing : styles.messageRowIncoming]}>
-              {!msg.outgoing && <Image source={{ uri: chat.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZlSsme-lB6TGmwXEPErD2kQmja88j0FklGzU4Fzgg8BdaGNb5RRHpnYjci5jJ5G1m9dVv19DcQ66h_Xlp_iEVG4qm0veJIgnCGuLM3noDCVvf4UTtHSquHfJTd5aRMbUms3M4Hviya-Asgo4q9QbnZiDFtNDJEYc_bE-g2ZcHyFK9gKyH3UmsUppizhW7fk_Akf4_UqYA3bvEjJmveplDBSDNzMDrruXjxJDYRg6UoM9TgwYSzAXAQW-NmZZ17BXqTEGdSDjLE' }} style={styles.messageAvatar} />}
-              <View style={msg.outgoing ? { alignItems: 'flex-end' } : {}}>
-                <View style={[styles.bubble, msg.outgoing ? styles.bubbleOutgoing : styles.bubbleIncoming]}>
-                  <Text style={msg.outgoing ? styles.textOutgoing : styles.textIncoming}>{msg.text}</Text>
-                </View>
-                {msg.outgoing ? (
-                  <View style={styles.outgoingTimeRow}>
-                    <Text style={styles.messageTime}>{msg.time}</Text>
-                    <Text style={styles.readReceipt}>✓✓</Text>
+              return (
+                <View key={msg.id} style={[styles.messageRow, msg.outgoing ? styles.messageRowOutgoing : styles.messageRowIncoming]}>
+                  {!msg.outgoing && <Image source={{ uri: partnerAvatar }} style={styles.messageAvatar} />}
+                  <View style={msg.outgoing ? { alignItems: 'flex-end' } : {}}>
+                    <View style={[styles.bubble, msg.outgoing ? styles.bubbleOutgoing : styles.bubbleIncoming]}>
+                      <Text style={msg.outgoing ? styles.textOutgoing : styles.textIncoming}>{msg.text}</Text>
+                    </View>
+                    <View style={styles.timeRow}>
+                      <Text style={styles.messageTime}>{timeDisplay}</Text>
+                      {msg.outgoing && <Text style={styles.readReceipt}>✓✓</Text>}
+                    </View>
                   </View>
-                ) : (
-                  <Text style={styles.messageTime}>{msg.time}</Text>
-                )}
-              </View>
-            </View>
-          ))}
-
+                </View>
+              );
+            })
+          )}
         </ScrollView>
 
         {/* Input Area */}
         <View style={styles.inputArea}>
-          <Pressable style={styles.attachBtn}>
-            <Text style={styles.attachBtnTxt}>+</Text>
-          </Pressable>
-          
           <View style={styles.inputContainer}>
             <TextInput 
               style={styles.textInput}
-              placeholder="Message..."
+              placeholder={`Message ${partnerName.split(' ')[0]}...`}
               placeholderTextColor={C.outline}
-              multiline
               value={inputText}
               onChangeText={setInputText}
+              onSubmitEditing={handleSend}
             />
-            <Pressable style={styles.emojiBtn}>
-              <Text style={styles.emojiTxt}>😊</Text>
-            </Pressable>
           </View>
           
           <Pressable 
-            style={styles.sendBtn} 
-            onPress={async () => {
-              if (inputText.trim()) {
-                const text = inputText;
-                setInputText('');
-                try {
-                  setMessages([...messages, { id: Date.now().toString(), text, time: 'Just now', outgoing: true }]);
-                } catch (e) {
-                  setMessages([...messages, { id: Date.now().toString(), text, time: 'Just now', outgoing: true }]);
-                }
-              }
-            }}
+            style={[styles.sendBtn, !inputText.trim() && { opacity: 0.5 }]} 
+            onPress={handleSend}
+            disabled={!inputText.trim()}
           >
             <Text style={styles.sendBtnTxt}>➤</Text>
           </Pressable>
@@ -178,45 +251,36 @@ const styles = StyleSheet.create({
   
   headerActions: { flexDirection: 'row', gap: 8 },
   actionBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-  infoIcon: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.onSurfaceVariant, justifyContent: 'center', alignItems: 'center' },
-  infoIconTxt: { color: C.surfaceLowest, fontSize: 14, fontWeight: '700', fontStyle: 'italic' },
-  
-  chatArea: { flex: 1, paddingHorizontal: 16 },
-  chatScroll: { paddingVertical: 20, gap: 16 },
-  
-  timestampContainer: { alignItems: 'center', marginBottom: 12 },
-  timestampPill: { backgroundColor: C.surfaceContainer, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 16 },
-  timestampText: { fontSize: 12, color: C.outline, fontWeight: '600' },
-  
-  messageRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginBottom: 12 },
+  infoIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: C.surfaceContainer, justifyContent: 'center', alignItems: 'center' },
+  infoIconTxt: { fontSize: 16, fontWeight: 'bold', color: C.onSurfaceVariant },
+
+  chatArea: { flex: 1 },
+  chatScroll: { padding: 16, flexGrow: 1, justifyContent: 'flex-end' },
+  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: C.onSurface, marginBottom: 4 },
+  emptySubtitle: { fontSize: 13, color: C.onSurfaceVariant },
+
+  messageRow: { flexDirection: 'row', marginBottom: 14, alignItems: 'flex-end' },
   messageRowIncoming: { justifyContent: 'flex-start' },
   messageRowOutgoing: { justifyContent: 'flex-end' },
+  messageAvatar: { width: 32, height: 32, borderRadius: 16, marginRight: 8 },
   
-  messageAvatar: { width: 32, height: 32, borderRadius: 16, marginBottom: 20 }, // mb=20 to align with bottom of bubble before time
+  bubble: { maxWidth: '75%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 18 },
+  bubbleIncoming: { backgroundColor: C.surfaceLowest, borderBottomLeftRadius: 4, borderWidth: 1, borderColor: C.surfaceContainer },
+  bubbleOutgoing: { backgroundColor: C.primaryContainer, borderBottomRightRadius: 4 },
   
-  bubble: { maxWidth: '75%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20 },
-  bubbleIncoming: { backgroundColor: C.surfaceContainer, borderBottomLeftRadius: 4 },
-  bubbleOutgoing: { backgroundColor: C.primary, borderBottomRightRadius: 4 },
+  textIncoming: { fontSize: 14, color: C.onSurface, lineHeight: 20 },
+  textOutgoing: { fontSize: 14, color: C.onPrimary, lineHeight: 20 },
   
-  textIncoming: { fontSize: 16, color: C.onSurface, lineHeight: 22 },
-  textOutgoing: { fontSize: 16, color: C.onPrimary, lineHeight: 22 },
-  
-  messageTime: { fontSize: 11, color: C.outline, marginTop: 4, marginHorizontal: 4 },
-  outgoingTimeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 4 },
-  readReceipt: { fontSize: 11, color: C.primary, fontWeight: '800', marginLeft: 4 },
-  
-  inputArea: { flexDirection: 'row', alignItems: 'flex-end', padding: 12, paddingBottom: 24, backgroundColor: C.surfaceLowest, gap: 12, borderTopWidth: 1, borderTopColor: C.surfaceContainer },
-  
-  attachBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#e8ecf4', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
-  attachBtnTxt: { fontSize: 24, color: C.primaryContainer, fontWeight: '500', marginTop: -2 },
-  
-  inputContainer: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: 24, paddingHorizontal: 16, paddingVertical: 8, minHeight: 48 },
-  textInput: { flex: 1, fontSize: 16, color: C.onSurface, maxHeight: 100, paddingTop: 6, paddingBottom: 6 },
-  emojiBtn: { marginLeft: 8 },
-  emojiTxt: { fontSize: 20 },
-  
-  sendBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: C.primary, justifyContent: 'center', alignItems: 'center', paddingLeft: 4, marginBottom: 0 },
-  sendBtnTxt: { fontSize: 20, color: C.onPrimary },
+  timeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4, paddingHorizontal: 4 },
+  messageTime: { fontSize: 11, color: C.outline },
+  readReceipt: { fontSize: 11, color: C.primary },
+
+  inputArea: { flexDirection: 'row', alignItems: 'center', padding: 12, backgroundColor: C.surfaceLowest, borderTopWidth: 1, borderTopColor: C.surfaceContainer, gap: 10 },
+  inputContainer: { flex: 1, backgroundColor: C.surfaceContainer, borderRadius: 24, paddingHorizontal: 16, height: 46, justifyContent: 'center' },
+  textInput: { fontSize: 14, color: C.onSurface, height: 46 },
+  sendBtn: { width: 46, height: 46, borderRadius: 23, backgroundColor: C.primary, justifyContent: 'center', alignItems: 'center' },
+  sendBtnTxt: { color: 'white', fontSize: 18, marginLeft: 2 },
 });
 
 export default ChatDetailScreen;

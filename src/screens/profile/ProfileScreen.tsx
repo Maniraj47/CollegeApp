@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../hooks/useAuth';
 
 const C = {
   background: '#f7f9fb',
@@ -20,6 +21,8 @@ const C = {
 
 const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
   const navigation = useNavigation<any>();
+  const { userData } = useAuth();
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
@@ -60,11 +63,13 @@ const ProfileScreen = ({ onLogout }: { onLogout?: () => void }) => {
           </View>
           
           <View style={styles.infoRow}>
-            <Text style={styles.profileName}>Sarah Jenkins</Text>
+            <Text style={styles.profileName}>{userData?.displayName || 'Student Name'}</Text>
             <View style={styles.verifiedBadge}><Text style={styles.verifiedText}>✓</Text></View>
           </View>
           
-          <Text style={styles.profileSub}>Computer Science • Junior • Class of '25</Text>
+          <Text style={styles.profileSub}>
+            {userData?.department || 'Department'} • {userData?.year || 'Year'} • {userData?.regNo || 'Reg No'}
+          </Text>
           <Text style={styles.bio}>Building apps and drinking too much matcha. Exploring the intersection of UI/UX and machine learning. Always down for a campus coffee chat! ☕️✨</Text>
         </View>
 

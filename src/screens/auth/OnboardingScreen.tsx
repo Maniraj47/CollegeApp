@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { firestore } from '../../config/firebaseConfig';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -12,6 +12,50 @@ const C = {
   onSurface: '#191c1e',
   onSurfaceVariant: '#434656',
   outlineVariant: '#c3c5d9',
+};
+
+const DEPARTMENTS = ['CSE', 'ECE', 'EEE', 'BIO-TECH'];
+const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+const CustomSelect = ({ label, value, options, onSelect }: { label: string, value: string, options: string[], onSelect: (v: string) => void }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <>
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>{label}</Text>
+        <Pressable style={styles.input} onPress={() => setModalVisible(true)}>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <Text style={{ color: value ? C.onSurface : '#9ca3af', fontSize: 16 }}>
+              {value || `Select ${label}`}
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select {label}</Text>
+            {options.map((opt) => (
+              <TouchableOpacity
+                key={opt}
+                style={styles.modalOption}
+                onPress={() => {
+                  onSelect(opt);
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={[styles.modalOptionText, value === opt && { color: C.primary, fontWeight: '700' }]}>
+                  {opt}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+    </>
+  );
 };
 
 const OnboardingScreen = () => {
@@ -43,17 +87,19 @@ const OnboardingScreen = () => {
       setError('');
       
       const userRef = doc(firestore, 'users', user!.uid);
-      await updateDoc(userRef, {
+      // Use setDoc with merge: true instead of updateDoc
+      // This guarantees it will create the document if it doesn't exist yet!
+      await setDoc(userRef, {
+        uid: user!.uid,
+        email: user!.email,
         displayName: name.trim(),
         regNo: regNo.trim().toUpperCase(),
         department: department.trim(),
         year: year.trim(),
         onboardingCompleted: true,
-      });
+      }, { merge: true });
       
-      // We don't need to navigate manually. 
-      // The `onSnapshot` listener in `useAuth` will update `userData`, 
-      // which will instantly re-render `AppNavigator` and show the MainStack!
+      // onSnapshot listener in useAuth will automatically advance navigation
     } catch (err: any) {
       setError(err.message || 'Failed to complete setup');
       setLoading(false);
@@ -94,27 +140,19 @@ const OnboardingScreen = () => {
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Department</Text>
-            <TextInput
-              style={styles.input}
-              value={department}
-              onChangeText={setDepartment}
-              placeholder="e.g. Computer Science"
-              placeholderTextColor="#9ca3af"
-            />
-          </View>
+          <CustomSelect
+            label="Department"
+            value={department}
+            options={DEPARTMENTS}
+            onSelect={setDepartment}
+          />
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Year of Study</Text>
-            <TextInput
-              style={styles.input}
-              value={year}
-              onChangeText={setYear}
-              placeholder="e.g. 3rd Year"
-              placeholderTextColor="#9ca3af"
-            />
-          </View>
+          <CustomSelect
+            label="Year of Study"
+            value={year}
+            options={YEARS}
+            onSelect={setYear}
+          />
 
           <Pressable style={styles.btn} onPress={handleCompleteSetup} disabled={loading}>
             {loading ? (
@@ -147,10 +185,10 @@ const styles = StyleSheet.create({
     backgroundColor: C.surfaceLowest,
     borderRadius: 16,
     paddingHorizontal: 16,
-    fontSize: 16,
-    color: C.onSurface,
     borderWidth: 1,
     borderColor: C.outlineVariant,
+    fontSize: 16,
+    color: C.onSurface,
   },
   
   btn: {
@@ -166,6 +204,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   btnText: { color: 'white', fontSize: 16, fontWeight: '700' },
+
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  modalContent: { width: '100%', backgroundColor: 'white', borderRadius: 24, padding: 20, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 20, elevation: 10 },
+  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 16, color: C.onSurface, textAlign: 'center' },
+  modalOption: { paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  modalOptionText: { fontSize: 16, color: C.onSurface, textAlign: 'center' },
 });
 
 export default OnboardingScreen;

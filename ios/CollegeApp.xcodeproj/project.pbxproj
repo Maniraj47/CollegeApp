@@ -10,7 +10,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D1665232FFF6CB600CAD639 /* GoogleService-Info 2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2D1665222FFF6CB600CAD639 /* GoogleService-Info 2.plist */; };
 		3A88F191A65DF233B92FE458 /* GoogleService-Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = 83C9689AA7A1EBBB99D7EACC /* GoogleService-Info.plist */; };
-		4632DCB58634C339E0CE2CD4 /* libPods-CollegeApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0A05FA7278215BD98FB85C5 /* libPods-CollegeApp.a */; };
+		5351B0D134D71881B8A74DEF /* Pods_CollegeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2DBF9A793FFDC7FE8964603 /* Pods_CollegeApp.framework */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7730353524934EB4F4B2D058 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -27,7 +27,7 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = CollegeApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = CollegeApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		83C9689AA7A1EBBB99D7EACC /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		A0A05FA7278215BD98FB85C5 /* libPods-CollegeApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CollegeApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2DBF9A793FFDC7FE8964603 /* Pods_CollegeApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CollegeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -36,7 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4632DCB58634C339E0CE2CD4 /* libPods-CollegeApp.a in Frameworks */,
+				5351B0D134D71881B8A74DEF /* Pods_CollegeApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,7 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				A0A05FA7278215BD98FB85C5 /* libPods-CollegeApp.a */,
+				C2DBF9A793FFDC7FE8964603 /* Pods_CollegeApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

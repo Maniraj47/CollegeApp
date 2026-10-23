@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Platform, Alert, Share, Modal, TextInput, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-// import firestore from '@react-native-firebase/firestore';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { firestore } from '../../config/firebaseConfig';
 
 const C = {
   background: '#f7f9fb',
@@ -16,33 +17,18 @@ const C = {
   outline: '#737688',
 };
 
-const POSTS = [
-  {
-    id: '1',
-    user: 'Marcus J.',
-    verified: true,
-    time: '2 hrs ago',
-    location: 'Campus North',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAViLw2zwzhUSJFy_UuJo2aYJ6jH0nHZwl68UEM9ORF33nfLAH19HVQpHlczhhLc4GbVb0EA9SrvV1ofwaOZdC4XUlmlxLeYL9dkxym0SHhy-yhy5VZFCbvRgWBhEOnnnLtcdDcN-VL-Oy9lLJl5N75ampRtuW1ZVmRPnMNsNsXHZDQeoA7DQL_yu3FVI-qEJJmO3dbTsTHx9sPlQxmckEOZDTePrXWJpphGC_XeodlyoPCv2RdH8spTg4hsLj2MH9FblEQc66ehu8',
-    text: "Just secured tickets for the homecoming game! 🏈 Who's tailgating at Lot B beforehand? Bringing the portable grill.",
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBV3fkLyi3TntElT3C1-rZ1eJ7W2rHHRPZkBic29d8y_UKHs13oPOSNHGpivVfTGpkgflGoD6ddGcqs4qj5Y4ntR-A4d79JUCHWqIqSobEap88Y0dMpCM6x6OBVM9SL0VddGkAkUMjDn3C1R94Ucr96R7mOdduDG4h5Bar5t046cDC6azeESTFGjimypkWNAfZoBox_I-5dqA3o4dvlsJ7vfZZPsxOvhFOEWrSjEz3JkF-zTDhG480Brao46niTatcRSE_PknaX1mU',
-    likes: 142,
-    comments: 24,
-  },
-];
-
 const INITIAL_POLL = {
   id: '2',
-  user: 'Sarah T.',
+  user: 'Campus Poll',
   verified: true,
-  time: '4 hrs ago',
-  location: 'Study Groups',
-  avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDmVoIx5fh3Gu7Zs6vYiqHzNV5y2eIy3sT1_grJV7w_VJzIQnqtZouDs0tfuiGYcx4f9RvYRqEhClfXfcrp2bIBL3KMTObusf0HAyI9p2868Zig64lLDcasuQ8lX5RVQmeSevVOdx5eF2KIzmnok60carWUhL9xLepa-0NXA3i-4xXGPLlERduBtCbLyveUNNuB-wfHb3ZpBRoMbuK-aDdbAlaikb_p9l75HyT_l1zCdrOCKDsCfkT1FHXUrPzPlWtSfL_Yxz00Pa0',
+  time: 'Today',
+  location: 'Campus Wide',
+  avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=CampusPoll',
   text: "Midterms next week! Where's the best spot to cram tonight? 📚☕️",
   poll: [
     { label: 'Main Library (Quiet Floor)', percent: 65, active: false },
-    { label: 'Student Union', percent: 20, active: false },
-    { label: 'Local Coffee Shop', percent: 15, active: false },
+    { label: 'Student Union Lounge', percent: 20, active: false },
+    { label: 'Campus Coffee Shop', percent: 15, active: false },
   ],
   votes: 342,
   likes: 45,
@@ -59,9 +45,28 @@ const HomeScreen = () => {
   const [pollLikes, setPollLikes] = useState(INITIAL_POLL.likes);
   const [pollCommentCount, setPollCommentCount] = useState(INITIAL_POLL.comments);
 
-  // Fetch posts from Firestore
-  React.useEffect(() => {
-    setPosts(POSTS);
+  // Fetch real posts from Firestore
+  useEffect(() => {
+    const q = query(collection(firestore, 'posts'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const realPosts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        user: doc.data().authorName || 'Student',
+        verified: true,
+        time: doc.data().createdAt?.toDate ? new Date(doc.data().createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent',
+        location: doc.data().authorDepartment || 'Campus',
+        avatar: doc.data().authorAvatar || `https://api.dicebear.com/7.x/initials/svg?seed=${doc.data().authorName || 'User'}`,
+        text: doc.data().content || '',
+        image: doc.data().imageUrl || null,
+        likes: doc.data().likesCount || 0,
+        comments: doc.data().commentsCount || 0,
+      }));
+      setPosts(realPosts);
+    }, (err) => {
+      console.warn('Error fetching posts:', err);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   // Comments modal state
