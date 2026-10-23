@@ -56,7 +56,9 @@ const ChatDetailScreen = ({ route }: any) => {
         const fetched: any[] = [];
         snapshot.docs.forEach((docSnap) => {
           const data = docSnap.data();
+          const currentThreadId = [myUid, partnerId].sort().join('_');
           if (
+            data.threadId === currentThreadId ||
             (data.senderId === myUid && data.recipientId === partnerId) ||
             (data.senderId === partnerId && data.recipientId === myUid)
           ) {

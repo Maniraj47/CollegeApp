@@ -211,7 +211,9 @@ export const MessagesPage: React.FC<MessagesPageProps> = ({
   // Filter messages for active conversation
   const currentChatMessages = messages.filter((msg) => {
     if (!activePartnerId) return false;
+    const currentThreadId = [myUid, activePartnerId].sort().join('_');
     return (
+      msg.threadId === currentThreadId ||
       (msg.senderId === myUid && msg.recipientId === activePartnerId) ||
       (msg.senderId === activePartnerId && msg.recipientId === myUid)
     );
@@ -267,7 +269,8 @@ export const MessagesPage: React.FC<MessagesPageProps> = ({
         createdAt: serverTimestamp(),
       });
     } catch (err: any) {
-      console.warn('[Messages] Firestore addDoc notice:', err);
+      console.error('[Messages] Firestore addDoc notice:', err);
+      alert('Could not deliver message to Firebase: ' + (err.message || err));
     } finally {
       setIsSending(false);
     }
