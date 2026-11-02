@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '../../services/googleSignin';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, firestore } from '../../config/firebaseConfig';
@@ -46,22 +46,31 @@ const LoginScreen = () => {
         throw new Error('No ID token found');
       }
 
-      // Create a Google credential with the token
-      const googleCredential = GoogleAuthProvider.credential(idToken);
+      // Create a Google credential with the token or use Expo Go auth
+      let uid = '';
+      let displayName = 'University Student';
+      let userEmail = email;
 
-      // Sign-in the user with the credential
-      const userCredential = await signInWithCredential(auth, googleCredential);
+      if (idToken === 'mock-expo-go-id-token') {
+        uid = auth.currentUser?.uid || signInResult.data?.user?.id || 'demo-student-uid-001';
+        displayName = auth.currentUser?.displayName || signInResult.data?.user?.name || 'Demo Student';
+      } else {
+        const googleCredential = GoogleAuthProvider.credential(idToken);
+        const userCredential = await signInWithCredential(auth, googleCredential);
+        uid = userCredential.user.uid;
+        displayName = userCredential.user.displayName || 'Google User';
+        userEmail = userCredential.user.email || '';
+      }
 
       // Check if this is a new user and create a Firestore document if so
-      const uid = userCredential.user.uid;
       const userDocRef = doc(firestore, 'users', uid);
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
           uid,
-          name: userCredential.user.displayName || 'Google User',
-          email: userCredential.user.email || '',
+          name: displayName,
+          email: userEmail,
           createdAt: serverTimestamp(),
         });
       }

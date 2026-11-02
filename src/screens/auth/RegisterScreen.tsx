@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, firestore } from '../../config/firebaseConfig';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '../../services/googleSignin';
 
 GoogleSignin.configure({
   webClientId: '182883918097-r0q0p9sfaavq4f2t3dvhtc2e8cd5t655.apps.googleusercontent.com', 
@@ -94,12 +94,20 @@ const RegisterScreen = ({ navigation }: any) => {
         throw new Error('No ID token found');
       }
 
-      const googleCredential = GoogleAuthProvider.credential(idToken);
-      const userCredential = await signInWithCredential(auth, googleCredential);
-      
-      const uid = userCredential.user.uid;
-      const userEmail = userCredential.user.email || '';
-      const userName = userCredential.user.displayName || 'Google User';
+      let uid = '';
+      let userEmail = email;
+      let userName = 'University Student';
+
+      if (idToken === 'mock-expo-go-id-token') {
+        uid = auth.currentUser?.uid || signInResult.data?.user?.id || 'demo-student-uid-001';
+        userName = auth.currentUser?.displayName || signInResult.data?.user?.name || 'Demo Student';
+      } else {
+        const googleCredential = GoogleAuthProvider.credential(idToken);
+        const userCredential = await signInWithCredential(auth, googleCredential);
+        uid = userCredential.user.uid;
+        userEmail = userCredential.user.email || '';
+        userName = userCredential.user.displayName || 'Google User';
+      }
 
       // Check if user already exists
       const userDocRef = doc(firestore, 'users', uid);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import * as ImagePicker from 'react-native-image-picker';
+import { launchImageLibrary } from '../../services/imagePicker';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { firestore, storage } from '../../config/firebaseConfig';
@@ -65,7 +65,7 @@ const CreatePostScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibrary({
+    const result = await launchImageLibrary({
       mediaType: 'photo',
       quality: 0.8,
       includeBase64: true,
