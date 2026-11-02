@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Switch, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../config/firebaseConfig';
+import { useAuth } from '../../hooks/useAuth';
 
 const C = {
   background: '#f7f9fb',
@@ -22,6 +21,7 @@ const COMMON_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKRZl
 const SettingsScreen = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const navigation = useNavigation<any>();
+  const { logout } = useAuth();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -103,11 +103,13 @@ const SettingsScreen = () => {
         </View>
 
         {/* Logout Button */}
-        <Pressable style={styles.logoutCard} onPress={() => {
-          signOut(auth).then(() => {
+        <Pressable 
+          style={styles.logoutCard} 
+          onPress={async () => {
+            await logout();
             Alert.alert('Logged Out', 'You have successfully logged out.');
-          });
-        }}>
+          }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <Text style={styles.logoutIcon}>🚪</Text>
             <Text style={styles.logoutText}>Logout</Text>

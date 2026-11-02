@@ -25,7 +25,7 @@ const ChatDetailScreen = ({ route }: any) => {
   const { user, userData } = useAuth();
   const [messages, setMessages] = useState<any[]>([]);
   const [inputText, setInputText] = useState('');
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<any>(null);
 
   const { chat } = route.params || {
     chat: {

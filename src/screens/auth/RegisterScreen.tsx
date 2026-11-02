@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, firestore } from '../../config/firebaseConfig';
 import { GoogleSignin } from '../../services/googleSignin';
+import { useAuth } from '../../hooks/useAuth';
 
 GoogleSignin.configure({
   webClientId: '182883918097-r0q0p9sfaavq4f2t3dvhtc2e8cd5t655.apps.googleusercontent.com', 
@@ -24,6 +25,7 @@ const C = {
 };
 
 const RegisterScreen = ({ navigation }: any) => {
+  const { loginAsDemoStudent } = useAuth();
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -63,12 +65,14 @@ const RegisterScreen = ({ navigation }: any) => {
       await setDoc(doc(firestore, 'users', uid), {
         uid,
         name,
+        displayName: name,
         email,
+        onboardingCompleted: true,
         createdAt: serverTimestamp(),
-      });
-      // Auth listener in useAuth will automatically redirect
+      }, { merge: true });
     } catch (err: any) {
       setError(err.message || 'Registration failed');
+    } finally {
       setLoading(false);
     }
   };
@@ -88,40 +92,38 @@ const RegisterScreen = ({ navigation }: any) => {
         throw new Error('Please use a valid university email (.edu or @saveetha.com).');
       }
 
-      let idToken = signInResult.data?.idToken;
-      
+      const idToken = signInResult.data?.idToken;
       if (!idToken) {
         throw new Error('No ID token found');
       }
 
-      let uid = '';
-      let userEmail = email;
-      let userName = 'University Student';
-
+      // In Expo Go sandbox mode, immediately activate demo student
       if (idToken === 'mock-expo-go-id-token') {
-        uid = auth.currentUser?.uid || signInResult.data?.user?.id || 'demo-student-uid-001';
-        userName = auth.currentUser?.displayName || signInResult.data?.user?.name || 'Demo Student';
-      } else {
-        const googleCredential = GoogleAuthProvider.credential(idToken);
-        const userCredential = await signInWithCredential(auth, googleCredential);
-        uid = userCredential.user.uid;
-        userEmail = userCredential.user.email || '';
-        userName = userCredential.user.displayName || 'Google User';
+        await loginAsDemoStudent();
+        return;
       }
 
-      // Check if user already exists
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(auth, googleCredential);
+      const uid = userCredential.user.uid;
+      const userEmail = userCredential.user.email || '';
+      const userName = userCredential.user.displayName || 'Google User';
+
       const userDocRef = doc(firestore, 'users', uid);
       const userDoc = await getDoc(userDocRef);
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
           uid,
           name: userName,
+          displayName: userName,
           email: userEmail,
+          onboardingCompleted: true,
           createdAt: serverTimestamp(),
-        });
+        }, { merge: true });
       }
     } catch (err: any) {
       setError(err.message || 'Google Registration failed');
+    } finally {
       setLoading(false);
     }
   };
@@ -227,7 +229,23 @@ const RegisterScreen = ({ navigation }: any) => {
               </View>
 
               <Pressable style={styles.googleBtn} onPress={handleGoogleRegister} disabled={loading}>
-                <Text style={styles.googleBtnText}>Sign up with Google</Text>
+                <Text style={styles.googleBtnText}>{loading ? 'Connecting...' : 'Sign up with Google'}</Text>
+              </Pressable>
+
+              {/* Instant Student Demo Preview */}
+              <Pressable 
+                style={styles.demoBtn} 
+                onPress={async () => {
+                  try {
+                    setLoading(true);
+                    await loginAsDemoStudent();
+                  } finally {
+                    setLoading(false);
+                  }
+                }} 
+                disabled={loading}
+              >
+                <Text style={styles.demoBtnText}>⚡ Instant Student Demo Preview</Text>
               </Pressable>
 
               <View style={styles.loginRow}>
@@ -291,6 +309,9 @@ const styles = StyleSheet.create({
   
   googleBtn: { backgroundColor: C.surfaceLowest, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: C.outlineVariant },
   googleBtnText: { color: C.onSurface, fontSize: 16, fontWeight: '600' },
+  
+  demoBtn: { backgroundColor: '#003ec7', height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center', marginTop: 10, shadowColor: '#003ec7', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
+  demoBtnText: { color: '#ffffff', fontSize: 15, fontWeight: '700' },
   
   loginRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 16 },
   loginText: { fontSize: 16, color: C.onSurfaceVariant },
