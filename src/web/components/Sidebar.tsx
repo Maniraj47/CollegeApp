@@ -1,5 +1,5 @@
 import React from 'react';
-import { REAL_FIREBASE_USERS } from '../../constants/realUsers';
+import { REAL_FIREBASE_USERS } from '../../constants/mockUsers';
 
 export type WebTab = 'dashboard' | 'marketplace' | 'directory' | 'messages' | 'profile';
 

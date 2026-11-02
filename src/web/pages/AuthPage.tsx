@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, firestore } from '../../config/firebaseConfig';
-import { REAL_FIREBASE_USERS } from '../../constants/realUsers';
+import { REAL_FIREBASE_USERS } from '../../constants/mockUsers';
 export { REAL_FIREBASE_USERS };
 
 interface AuthPageProps {

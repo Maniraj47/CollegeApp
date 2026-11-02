@@ -8,7 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { firestore } from '../../config/firebaseConfig';
-import { REAL_FIREBASE_USERS, RealUser } from '../../constants/realUsers';
+import { REAL_FIREBASE_USERS, RealUser } from '../../constants/mockUsers';
 
 interface MessagesPageProps {
   searchQuery: string;

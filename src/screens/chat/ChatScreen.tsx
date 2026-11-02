@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../config/firebaseConfig';
 import { useAuth } from '../../hooks/useAuth';
-import { REAL_FIREBASE_USERS, RealUser } from '../../constants/realUsers';
+import { REAL_FIREBASE_USERS, RealUser } from '../../constants/mockUsers';
 
 const C = {
   background: '#f7f9fb',

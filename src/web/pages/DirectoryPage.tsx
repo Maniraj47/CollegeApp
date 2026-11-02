@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../config/firebaseConfig';
-import { REAL_FIREBASE_USERS } from '../../constants/realUsers';
+import { REAL_FIREBASE_USERS } from '../../constants/mockUsers';
 
 interface DirectoryPageProps {
   searchQuery: string;
