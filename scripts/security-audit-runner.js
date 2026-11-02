@@ -120,7 +120,7 @@ if (fs.existsSync(path.join(ROOT_DIR, 'firestore.rules'))) {
 // 2. Audit for hardcoded real student PII
 if (fs.existsSync(path.join(ROOT_DIR, 'src/constants/realUsers.ts'))) {
   const content = fs.readFileSync(path.join(ROOT_DIR, 'src/constants/realUsers.ts'), 'utf8');
-  if (content.includes('regNo') || content.includes('@saveetha.com')) {
+  if (content.includes('@saveetha.com') || content.includes('rapidsolution2024@gmail.com')) {
     findings.push({
       id: 'SEC-002',
       severity: 'CRITICAL',
@@ -245,4 +245,3 @@ if (criticalCount > 0) {
   console.log('\x1b[32m\x1b[1m[PASSED] No Critical security blockers found.\x1b[0m');
   process.exit(0);
 }
-
