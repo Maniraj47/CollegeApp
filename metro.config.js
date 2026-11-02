@@ -18,12 +18,6 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
       type: 'sourceFile',
     };
   }
-  if (moduleName === 'react-native/asset-registry') {
-    return {
-      filePath: ASSET_REGISTRY_PATH,
-      type: 'sourceFile',
-    };
-  }
   if (defaultResolveRequest) {
     return defaultResolveRequest(context, moduleName, platform);
   }
