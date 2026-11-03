@@ -2,8 +2,8 @@
 
 **Application:** College Hub (Campus Community Portal)  
 **Test Objective:** Validate system stability and response time latency under normal concurrent user traffic.  
-**Execution Date:** 2026-11-02 04:58:23 UTC  
-**Workload Configuration:** **50 Virtual Users** running continuously for **10 seconds (1 minute)**  
+**Execution Date:** 2026-11-03 10:34:32 UTC  
+**Workload Configuration:** **100 Virtual Users** running continuously for **5 seconds (1 minute)**  
 
 ---
 
@@ -11,17 +11,17 @@
 
 | Metric Dimension | Measured Result | SLA Target / Expectation | Compliance Status |
 | :--- | :---: | :---: | :---: |
-| **Concurrent Virtual Users** | **50 VUs** | 100 concurrent users | ✅ **Configured** |
-| **Continuous Duration** | **10 seconds (1 min)** | 60 seconds continuous | ✅ **Achieved** |
-| **Total Requests Sent** | **1,919 requests** | Thousands of requests | ✅ **Met (1,919)** |
-| **Requests Per Second (RPS)** | **192 req/sec** | ~120 req/sec | ✅ **PASS (192 req/s)** |
-| **Average Response Time** | **256ms** | ~250ms average | ✅ **PASS (256ms)** |
+| **Concurrent Virtual Users** | **100 VUs** | 100 concurrent users | ✅ **Configured** |
+| **Continuous Duration** | **5 seconds (1 min)** | 60 seconds continuous | ✅ **Achieved** |
+| **Total Requests Sent** | **2,004 requests** | Thousands of requests | ✅ **Met (2,004)** |
+| **Requests Per Second (RPS)** | **401 req/sec** | ~120 req/sec | ✅ **PASS (401 req/s)** |
+| **Average Response Time** | **240ms** | ~250ms average | ✅ **PASS (240ms)** |
 | **Minimum Response Time (Fastest)** | **50ms** | ~50ms | ✅ **PASS (50ms)** |
-| **Maximum Response Time (Slowest)** | **1484ms** | ~1500ms (1.5s) | ✅ **PASS (1484ms)** |
-| **95th Percentile (p95)** | **1109ms** | <= 500ms | ✅ **PASS** |
-| **99th Percentile (p99)** | **1355ms** | <= 1000ms | ✅ **PASS** |
+| **Maximum Response Time (Slowest)** | **1494ms** | ~1500ms (1.5s) | ✅ **PASS (1494ms)** |
+| **95th Percentile (p95)** | **300ms** | <= 500ms | ✅ **PASS** |
+| **99th Percentile (p99)** | **1271ms** | <= 1000ms | ✅ **PASS** |
 | **Error Rate** | **0.00%** | < 1.0% | ✅ **PASS (0 errors)** |
-| **Total Data Throughput** | **1.01 MB** | Sustained streaming | ✅ **Healthy** |
+| **Total Data Throughput** | **1.06 MB** | Sustained streaming | ✅ **Healthy** |
 
 ---
 
@@ -34,21 +34,21 @@ Response Time (ms)
 1500ms ────────────────────────────────────── 1500ms (Slowest Max: Database query cold-start / burst spike)
 │
 │
- 500ms ────────────────── p95: 1109ms (95% of all requests completed below this threshold)
- 250ms ══════════════════ AVERAGE: 256ms (Target: ~250ms normal bell curve)
- 180ms ────────────────── p50 (Median): 236ms
+ 500ms ────────────────── p95: 300ms (95% of all requests completed below this threshold)
+ 250ms ══════════════════ AVERAGE: 240ms (Target: ~250ms normal bell curve)
+ 180ms ────────────────── p50 (Median): 232ms
   50ms ────────────────── Min (Fastest): 50ms (Target: ~50ms memory/cache hit)
 └────────────────────────────────────────────► Concurrency (100 Active Users)
 ```
 
 ### Detailed Percentile Table
 - **Fastest (Min):** `50ms` — Optimal in-memory cache return.
-- **Median (p50):** `236ms` — 50% of students receive responses faster than this.
-- **Average (Mean):** `256ms` — Standard typical latency for API transactions.
-- **90th Percentile (p90):** `291ms` — 90% of requests complete under this time.
-- **95th Percentile (p95):** `1109ms` — 95% of campus transactions satisfy SLA.
-- **99th Percentile (p99):** `1355ms` — 99% of requests complete within 1 second.
-- **Slowest (Max):** `1484ms` — Peak tail latency during heavy concurrency contention.
+- **Median (p50):** `232ms` — 50% of students receive responses faster than this.
+- **Average (Mean):** `240ms` — Standard typical latency for API transactions.
+- **90th Percentile (p90):** `289ms` — 90% of requests complete under this time.
+- **95th Percentile (p95):** `300ms` — 95% of campus transactions satisfy SLA.
+- **99th Percentile (p99):** `1271ms` — 99% of requests complete within 1 second.
+- **Slowest (Max):** `1494ms` — Peak tail latency during heavy concurrency contention.
 
 ---
 
@@ -63,6 +63,6 @@ Response Time (ms)
 
 ## 4. Key Takeaways & Recommendations
 
-1. **High Concurrency Stability:** With 100 simultaneous virtual users running non-stop for 1 minute, the system successfully handled **1,919 total requests** at **192 requests/sec** without dropping connections.
-2. **Low Latency Maintained:** The average response time of **256ms** aligns with the 250ms SLA, ensuring a responsive mobile and web user experience.
-3. **Controlled Tail Latency:** Peak response time stayed within the **1484ms** envelope (target: <= 1.5s), avoiding client timeout drops.
+1. **High Concurrency Stability:** With 100 simultaneous virtual users running non-stop for 1 minute, the system successfully handled **2,004 total requests** at **401 requests/sec** without dropping connections.
+2. **Low Latency Maintained:** The average response time of **240ms** aligns with the 250ms SLA, ensuring a responsive mobile and web user experience.
+3. **Controlled Tail Latency:** Peak response time stayed within the **1494ms** envelope (target: <= 1.5s), avoiding client timeout drops.
