@@ -177,7 +177,7 @@ if (fs.existsSync(loginFile)) {
 console.log('\n\x1b[36m[PHASE 4 & 5 - DEPENDENCY VULNERABILITY AUDIT]\x1b[0m');
 let auditOutput = null;
 try {
-  const rawAudit = execSync('npm audit --json', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+  const rawAudit = execSync('npm audit --json', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], timeout: 15000 });
   auditOutput = JSON.parse(rawAudit);
 } catch (err) {
   if (err.stdout) {

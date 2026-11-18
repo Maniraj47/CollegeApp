@@ -590,3 +590,7 @@ console.log(`\x1b[32mSuccessfully generated Excel Workbook:\x1b[0m ${outputFileP
 console.log(`\x1b[32mSuccessfully generated Summary Copy:\x1b[0m ${summaryCopyPath}`);
 console.log(`Verified test case count: ${testCases.length} cases (Exceeds >= 300 test case requirement)`);
 
+module.exports = {
+  testCases,
+};
+
